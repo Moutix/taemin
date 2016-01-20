@@ -1,0 +1,21 @@
+general:
+  name: Taemin
+  desc: Le Magnifique
+  server: server.irc.net
+  port: 6667
+  chans:
+    - "#miku"
+
+plugins:
+  plugins.images.taemin: "TaeminImage"
+  plugins.pendu.taemin: "TaeminPendu"
+  plugins.singe.taemin: "TaeminSinge"
+  plugins.loveletter.taemin: "TaeminLoveLetter"
+  plugins.cafe.taemin: "TaeminCafe"
+  plugins.ascii.taemin: "TaeminAscii"
+  plugins.sayno.taemin: "TaeminSayNo"
+  plugins.trad.taemin: "TaeminTrad"
+  plugins.trans.taemin: "TaeminTrans"
+  plugins.timer.taemin: "TaeminTimer"
+  plugins.memory.taemin: "TaeminMemory"
+

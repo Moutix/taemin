@@ -1,0 +1,13 @@
+ImageSearch:
+  - taemin
+  - ji chang wook
+  - Onew
+  - Jong Hyun
+  - Minho
+  - Key shinee
+  - shinee
+
+googleApi:
+  APIKEY: "apikey"
+  CX: "cx"
+
