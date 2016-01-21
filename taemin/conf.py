@@ -14,10 +14,10 @@ class TaeminConf(object):
         self.config = {}
         self.add_to_conf(filename)
         self.plugin_confs = self.check_for_conf()
-        self.add_to_conf(filename)
-
         for conf in self.plugin_confs:
             self.add_to_conf(conf)
+
+        self.add_to_conf(filename)
 
 
     def add_to_conf(self, conf_file):
