@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from plugins.pendu.pendu import Pendu
+from pendu import Pendu
 
 class TaeminPendu(object):
     def __init__(self, taemin):

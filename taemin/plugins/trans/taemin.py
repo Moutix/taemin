@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from plugins.trans.trans import Transliterate
+from trans import Transliterate
 
 class TaeminTrans(object):
     def __init__(self, taemin):

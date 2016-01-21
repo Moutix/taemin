@@ -3,7 +3,6 @@
 
 import requests
 import random
-import os
 
 class ImageSearch(object):
     URL = "https://www.googleapis.com/customsearch/v1"
@@ -47,7 +46,7 @@ class ImageSearch(object):
         try:
             tinyurl = requests.get("http://tinyurl.com/api-create.php", params={"url": self.image}).text
         except requests.exceptions.RequestException as err:
-            return "Requests Error"
+            return "Requests Error: %s" % err
         return tinyurl
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 general:
   name: Taemin
   desc: Le Magnifique
-  server: server.irc.net
+  server: irc.larez.fr
   port: 6667
   chans:
     - "#miku"
@@ -18,4 +18,36 @@ plugins:
   plugins.trans.taemin: "TaeminTrans"
   plugins.timer.taemin: "TaeminTimer"
   plugins.memory.taemin: "TaeminMemory"
+  plugins.compliments.taemin: "TaeminCompliments"
 
+ImageSearch:
+  - taemin
+  - ji chang wook
+  - Onew
+  - Jong Hyun
+  - Minho
+  - Key shinee
+  - shinee
+
+googleApi:
+  APIKEY: "apikey"
+  CX: "cx"
+
+SayNo:
+  non_keyword:
+    - "word"
+  non_nick:
+    - "yournick"
+
+Compliments:
+  com_keyword:
+    - "s hi"
+    - "t gr"
+    - "ing "
+    - "ooo"
+    - "aaaa"
+    - "Schnif"
+  compliments:
+    - "Tu es un papillon"
+    - "Tu es ma lumière"
+    - "Je te dévouerai mon âme"

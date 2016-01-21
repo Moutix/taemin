@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from plugins.singe.singe import Singe
+from singe import Singe
 
 class TaeminSinge(object):
     def __init__(self, taemin):

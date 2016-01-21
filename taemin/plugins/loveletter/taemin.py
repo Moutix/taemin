@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from plugins.loveletter.loveletter import LoveLetter
+from loveletter import LoveLetter
 
 class TaeminLoveLetter(object):
     def __init__(self, taemin):

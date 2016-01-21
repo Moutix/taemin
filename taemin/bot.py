@@ -69,7 +69,7 @@ class Taemin(ircbot.SingleServerIRCBot):
     def _get_plugins(self):
         plugins = []
         for path, plugin_class in self.conf.get("plugins", {}).iteritems():
-            module = __import__(path, fromlist=[plugin_class])
+            module = __import__("taemin.%s" % path, fromlist=[plugin_class])
             plugin = getattr(module, plugin_class)
             plugins.append(plugin(self))
             print "Load plugin: %s" % plugin_class

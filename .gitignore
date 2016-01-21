@@ -58,6 +58,4 @@ docs/_build/
 # PyBuilder
 target/
 
-# Config File, only commit example file
-*.yml
-*.tmp
+*.save

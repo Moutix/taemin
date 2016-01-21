@@ -7,7 +7,7 @@ from datetime import datetime
 
 class TaeminMemory(object):
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    USERS_FILE = os.path.join(__location__, ".taemin_users.tmp")
+    USERS_FILE = os.path.join(__location__, "users.save")
 
     def __init__(self, taemin):
         self.taemin = taemin

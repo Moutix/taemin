@@ -5,7 +5,7 @@ class TaeminSayNo(object):
     def __init__(self, taemin):
         self.taemin = taemin
         self.non_keyword = self.taemin.conf.get("SayNo", {}).get("non_keyword", [])
-        self.non_nick = self.taemin.conf.get("SayNo", {}).get("non_keyword", [])
+        self.non_nick = self.taemin.conf.get("SayNo", {}).get("non_nick", [])
 
     def on_pubmsg(self, serv, canal, message, **kwargs):
         if self._say_no(message):

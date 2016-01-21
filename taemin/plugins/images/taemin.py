@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 import re
-from plugins.images.image import ImageSearch
+from image import ImageSearch
 
 class TaeminImage(object):
     MATCH_WORD = "taemin"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from plugins.trad.trad import Traduction
+from trad import Traduction
 
 class TaeminTrad(object):
     def __init__(self, taemin):
