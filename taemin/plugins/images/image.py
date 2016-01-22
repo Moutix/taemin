@@ -7,11 +7,21 @@ import random
 class ImageSearch(object):
     URL = "https://www.googleapis.com/customsearch/v1"
 
-    def __init__(self, conf, word=""):
-        self.conf = conf
-        self.word = word
-        if not word.strip():
-            self.word = random.choice(self.conf.get("ImageSearch", []))
+    def __init__(self, apicx, apikey):
+        self.apicx = apicx
+        self.apikey = apikey
+ 
+        self.word = None
+        self.html = None
+        self.images = None
+        self.image = None
+        self.tiny = None
+
+    def search(self, word):
+        if isinstance(word, list) or not word.strip():
+            self.word = random.choice(word)
+        else:
+            self.word = word
 
         self.html = self._get_json()
         self.images = self._get_images()
@@ -19,17 +29,17 @@ class ImageSearch(object):
         self.tiny = self._url_to_tiny()
 
     def _get_json(self, rsz=10):
-        data = {"cx": self.conf.get("googleApi", {}).get("CX"),
+        data = {"cx": self.apicx,
                 "searchType": "image",
-                "key": self.conf.get("googleApi", {}).get("APIKEY"),
+                "key": self.apikey,
                 "num": rsz,
                 "q": self.word}
         try:
-            r = requests.get(self.URL, params=data)
+            request = requests.get(self.URL, params=data)
         except requests.exceptions.RequestException as err:
             return {}
 
-        return r.json
+        return request.json
 
     def _get_images(self):
         images = []
@@ -49,7 +59,9 @@ class ImageSearch(object):
             return "Requests Error: %s" % err
         return tinyurl
 
+def main():
+    image = ImageSearch("", "")
+
 if __name__ == "__main__":
-    print ImageSearch({}).tiny
-    print ImageSearch({}, "taemin").tiny
+    main()
 

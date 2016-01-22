@@ -5,21 +5,30 @@ import re
 from image import ImageSearch
 
 class TaeminImage(object):
-    MATCH_WORD = "taemin"
-
     def __init__(self, taemin):
         self.taemin = taemin
+        self.confapi = self.taemin.conf.get("googleApi", {})
+        self.confimage = self.taemin.conf.get("ImageSearch", {})
+        self.image = ImageSearch(self.confapi.get("CX"), self.confapi.get("APIKEY"))
 
     def on_pubmsg(self, serv, canal, message, key, value, **kwargs):
         if key == "donne" or key == "give":
-            serv.privmsg(canal, ImageSearch(self.taemin.conf, value).tiny)
+            self.image.search(value)
+            serv.privmsg(canal, self.image.tiny)
 
-        if re.compile("^.*" + self.MATCH_WORD.lower() + ".*$").match(message.lower()):
-            serv.privmsg(canal, ImageSearch(self.taemin.conf).tiny)
+        for word in self.confimage.keys():
+            if re.compile("^.*" + word + ".*$").match(message.lower()):
+                self.image.search(self.confimage[word])
+                serv.privmsg(canal, self.image.tiny)
 
-    def on_privmsg(self, serv, source, key, value, **kwargs):
+    def on_privmsg(self, serv, source, message, key, value, **kwargs):
         if key == "donne" or key == "give":
-            serv.privmsg(source, ImageSearch(self.taemin.conf, value).tiny)
-        else:
-            serv.privmsg(source, ImageSearch(self.taemin.conf).tiny)
+            self.image.search(value)
+            serv.privmsg(source, self.image.tiny)
+
+        for word in self.confimage.keys():
+            if re.compile("^.*" + word + ".*$").match(message.lower()):
+                self.image.search(self.confimage[word])
+                serv.privmsg(source, self.image.tiny)
+
 

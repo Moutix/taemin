@@ -21,13 +21,17 @@ plugins:
   plugins.compliments.taemin: "TaeminCompliments"
 
 ImageSearch:
-  - taemin
-  - ji chang wook
-  - Onew
-  - Jong Hyun
-  - Minho
-  - Key shinee
-  - shinee
+  taemin:
+    - taemin
+    - ji chang wook
+    - Onew
+    - Jong Hyun
+    - Minho
+    - Key shinee
+    - shinee
+  faim:
+    - okonomiyaki
+    - sushi
 
 googleApi:
   APIKEY: "apikey"
