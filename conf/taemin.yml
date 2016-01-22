@@ -6,6 +6,14 @@ general:
   chans:
     - "#miku"
 
+database:
+  # type can be sqlite, mysql or pgsql
+  type: sqlite
+  host: localhost
+  name: taemin.db
+  user:
+  password:
+
 plugins:
   plugins.images.taemin: "TaeminImage"
   plugins.pendu.taemin: "TaeminPendu"

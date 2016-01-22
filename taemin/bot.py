@@ -5,16 +5,24 @@ import irclib
 import ircbot
 import re
 from conf import TaeminConf
+from database import DataBase
 
 class Taemin(ircbot.SingleServerIRCBot):
     def __init__(self, conf):
         self.conf = conf.config
-
         general_conf = self.conf.get("general", {})
+        db_conf = self.conf.get("database", {})
+
+        self.db = DataBase(db_conf.get("type"),
+                           name=db_conf.get("name"),
+                           user=db_conf.get("user"),
+                           password=db_conf.get("password"),
+                           host=db_conf.get("host"))
+
         self.chans = general_conf.get("chans", [])
         self.name = general_conf.get("name", "Taemin")
         self.desc = general_conf.get("desc", "Le Splendide")
-        self.server = general_conf.get("server", "irc.larez.fr")
+        self.server = general_conf.get("server", "")
         self.port = general_conf.get("port", 6667)
         ircbot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
 
