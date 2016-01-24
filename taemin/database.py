@@ -1,7 +1,6 @@
 from peewee import *
 import datetime
 
-
 class DataBase(object):
     def __init__(self, type_, name, user="", password="", host="localhost"):
         self.type_ = type_
@@ -9,6 +8,8 @@ class DataBase(object):
         self.user = user
         self.password = password
         self.host = host
+        print self.name
+        print self.type_
 
         self.db = self.init_db()
 

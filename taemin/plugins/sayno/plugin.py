@@ -7,9 +7,9 @@ class TaeminSayNo(object):
         self.non_keyword = self.taemin.conf.get("SayNo", {}).get("non_keyword", [])
         self.non_nick = self.taemin.conf.get("SayNo", {}).get("non_nick", [])
 
-    def on_pubmsg(self, serv, canal, message, **kwargs):
-        if self._say_no(message):
-            serv.privmsg(canal, "NON")
+    def on_pubmsg(self, serv, msg):
+        if self._say_no(msg.message):
+            serv.privmsg(msg.chan.name, "NON")
 
     def _say_no(self, message):
         test = False

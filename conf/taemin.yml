@@ -15,18 +15,18 @@ database:
   password:
 
 plugins:
-  plugins.images.taemin: "TaeminImage"
-  plugins.pendu.taemin: "TaeminPendu"
-  plugins.singe.taemin: "TaeminSinge"
-  plugins.loveletter.taemin: "TaeminLoveLetter"
-  plugins.cafe.taemin: "TaeminCafe"
-  plugins.ascii.taemin: "TaeminAscii"
-  plugins.sayno.taemin: "TaeminSayNo"
-  plugins.trad.taemin: "TaeminTrad"
-  plugins.trans.taemin: "TaeminTrans"
-  plugins.timer.taemin: "TaeminTimer"
-  plugins.memory.taemin: "TaeminMemory"
-  plugins.compliments.taemin: "TaeminCompliments"
+  plugins.images.plugin: "TaeminImage"
+  plugins.pendu.plugin: "TaeminPendu"
+  plugins.singe.plugin: "TaeminSinge"
+  plugins.loveletter.plugin: "TaeminLoveLetter"
+  plugins.cafe.plugin: "TaeminCafe"
+  plugins.ascii.plugin: "TaeminAscii"
+  plugins.sayno.plugin: "TaeminSayNo"
+  plugins.trad.plugin: "TaeminTrad"
+  plugins.trans.plugin: "TaeminTrans"
+  plugins.timer.plugin: "TaeminTimer"
+  plugins.memory.plugin: "TaeminMemory"
+  plugins.compliments.plugin: "TaeminCompliments"
 
 ImageSearch:
   taemin:

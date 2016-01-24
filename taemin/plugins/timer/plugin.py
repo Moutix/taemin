@@ -26,11 +26,12 @@ class TaeminTimer(object):
         self.taemin = taemin
         self.nb_timer = 0
 
-    def on_pubmsg(self, serv, canal, message, key, value, **kwargs):
-        if key != "timer":
+    def on_pubmsg(self, serv, msg):
+        if msg.key != "timer":
             return
+        chan = msg.chan.name
 
-        m = re.search("^(\d+)\s*(.*)$", value)
+        m = re.search("^(\d+)\s*(.*)$", msg.value)
         if m:
             self.nb_timer += 1
             _time = int(m.group(1))
@@ -39,9 +40,9 @@ class TaeminTimer(object):
                 msg = "Il est l'OR !!!"
 
             msg = "[Timer %d] Fin : %s" % (self.nb_timer, msg)
-            timer = Timer(self.taemin, _time, canal, msg)
+            timer = Timer(self.taemin, _time, chan, msg)
             timer.start()
-            serv.privmsg(canal, "[Timer %d] Démarre pour %s secondes" % (self.nb_timer, _time))
+            serv.privmsg(chan, "[Timer %d] Démarre pour %s secondes" % (self.nb_timer, _time))
         else:
-            serv.privmsg(canal, "[Timer] Usage : Temps (en s) + message (facultatif), ex : !timer 666 Pouet")
+            serv.privmsg(chan, "[Timer] Usage : Temps (en s) + message (facultatif), ex : !timer 666 Pouet")
 

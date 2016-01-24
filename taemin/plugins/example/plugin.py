@@ -5,14 +5,15 @@ class TaeminExample(object):
     def __init__(self, taemin):
         self.taemin = taemin
 
-    def on_join(self, serv, source, **kwargs):
+    def on_join(self, serv, connection):
         pass
 
-    def on_pubmsg(self, serv, canal, message, key, value, **kwargs):
+    def on_pubmsg(self, serv, msg):
         pass
 
-    def on_privmsg(self, serv, target, key, value, **kwargs):
+    def on_privmsg(self, serv, msg):
         pass
 
-
+    def on_quit(self, serv, connection):
+        pass
 

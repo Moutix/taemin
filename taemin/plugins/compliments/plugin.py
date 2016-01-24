@@ -8,11 +8,10 @@ class TaeminCompliments(object):
         self.taemin = taemin
         self.com_keywords = self.taemin.conf.get("Compliments", {}).get("com_keyword", [])
         self.compliments = self.taemin.conf.get("Compliments", {}).get("compliments", [])
-        print(self.compliments)
 
-    def on_pubmsg(self, serv, canal, message, **kwargs):
-        if self.iskw(message):
-            serv.privmsg(canal, random.choice(self.compliments).encode("utf-8"))
+    def on_pubmsg(self, serv, msg):
+        if self.iskw(msg.message):
+            serv.privmsg(msg.chan.name, random.choice(self.compliments).encode("utf-8"))
 
     def iskw(self, message):
         for kw in self.com_keywords:

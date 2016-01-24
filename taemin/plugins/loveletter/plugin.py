@@ -8,17 +8,22 @@ class TaeminLoveLetter(object):
         self.taemin = taemin
         self.loveletter = LoveLetter()
 
-    def on_pubmsg(self, serv, source, canal, message, key, value, **kwargs):
-        if key != "loveletter":
+    def on_pubmsg(self, serv, msg):
+        if msg.key != "loveletter":
             return
 
+        chan = msg.chan.name
+        value = msg.value
+        source = msg.user.name
+
+
         if value == "":
-            serv.privmsg(canal, "start pour commencer la partie, restart pour la recommencer")
+            serv.privmsg(chan, "start pour commencer la partie, restart pour la recommencer")
         elif value == "start":
             try:
                 self.loveletter.start()
             except ValueError as err:
-                serv.privmsg(canal, "%s, join pour rejoindre la partie" % err.message)
+                serv.privmsg(chan, "%s, join pour rejoindre la partie" % err.message)
             for player in self.loveletter.turn:
                 serv.privmsg(player.name, "Tes cartes : %s" % player.cards)
                 serv.privmsg(player.name, "Pour jouer dans le chan : !loveletter play carte_à_jouer personne_visée carte_visée")
@@ -29,7 +34,7 @@ class TaeminLoveLetter(object):
             try:
                 self.loveletter.add_player(source)
             except NameError as err:
-                serv.privmsg(canal, err.message)
+                serv.privmsg(chan, err.message)
         elif value[:4] == "play":
             options = value.split(" ")
             card = ""
@@ -48,16 +53,16 @@ class TaeminLoveLetter(object):
                 if result[:4] == "PRIV":
                     serv.privmsg(source, "%s" % result[5:])
                 else:
-                    serv.privmsg(canal, result)
+                    serv.privmsg(chan, result)
                 for player in self.loveletter.turn:
                     serv.privmsg(player.name, "Tes cartes : %s" % player.cards)
 
                 if self.loveletter.find_winner():
-                    serv.privmsg(canal, "%s a gagné !!!" % self.loveletter.find_winner().name)
+                    serv.privmsg(chan, "%s a gagné !!!" % self.loveletter.find_winner().name)
                     self.loveletter.restart()
             else:
-                serv.privmsg(canal, "Utilisation : !loveletter play carte_à_jouer personne_visée carte_visée")
+                serv.privmsg(chan, "Utilisation : !loveletter play carte_à_jouer personne_visée carte_visée")
 
         for line in self.loveletter.print_state().split("\n"):
-            serv.privmsg(canal, "%s" % line)
+            serv.privmsg(chan, "%s" % line)
 

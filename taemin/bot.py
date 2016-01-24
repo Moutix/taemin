@@ -4,21 +4,14 @@
 import irclib
 import ircbot
 import re
-from conf import TaeminConf
-from database import DataBase
+import datetime
+
+from taemin import env, schema
 
 class Taemin(ircbot.SingleServerIRCBot):
-    def __init__(self, conf):
-        self.conf = conf.config
+    def __init__(self):
+        self.conf = env.conf
         general_conf = self.conf.get("general", {})
-        db_conf = self.conf.get("database", {})
-
-        self.db = DataBase(db_conf.get("type"),
-                           name=db_conf.get("name"),
-                           user=db_conf.get("user"),
-                           password=db_conf.get("password"),
-                           host=db_conf.get("host"))
-
         self.chans = general_conf.get("chans", [])
         self.name = general_conf.get("name", "Taemin")
         self.desc = general_conf.get("desc", "Le Splendide")
@@ -29,64 +22,155 @@ class Taemin(ircbot.SingleServerIRCBot):
         self.plugins = self._get_plugins()
 
     def on_welcome(self, serv, ev):
+        query = schema.User.update(online=False)
+        query.execute()
+        query = schema.Connection.delete()
+        query.execute()
+
         for chan in self.chans:
             serv.join(chan)
 
     def on_join(self, serv, ev):
         source = irclib.nm_to_n(ev.source())
-        canal = ev.target()
+        if source == self.name:
+            return
+
+        chan = ev.target()
+        for name in self.channels[chan].users():
+            connection = self.find_connection(name, chan)
+            user = connection.user
+            user.online = True
+            user.save()
+
+        connection = self.connect_user(source, chan)
 
         for plugin in self.plugins:
             if getattr(plugin, "on_join", None):
-                plugin.on_join(serv, source=source, canal=canal)
+                plugin.on_join(serv, connection)
 
     def on_pubmsg(self, serv, ev):
-        canal = ev.target()
         source = irclib.nm_to_n(ev.source())
+        target = ev.target()
         message = ev.arguments()[0]
 
-        m = re.search("^!(\S+)\s*(.*)$", message)
-        if m:
-            key = m.group(1).lower()
-            value = m.group(2)
-        else:
-            key = ""
-            value = ""
+        msg = self.create_pub_message(source, target, message)
 
         for plugin in self.plugins:
             if getattr(plugin, "on_pubmsg", None):
-                plugin.on_pubmsg(serv, source=source, canal=canal, message=message, key=key, value=value)
+                plugin.on_pubmsg(serv, msg)
 
     def on_privmsg(self, serv, ev):
         source = irclib.nm_to_n(ev.source())
         target = ev.target()
-        message = ev.arguments()[0].lower()
+        message = ev.arguments()[0]
 
-        m = re.search("^!(\S+)\s*(.*)$", message)
-        if m:
-            key = m.group(1).lower()
-            value = m.group(2)
-        else:
-            key = ""
-            value = ""
+        msg = self.create_priv_message(source, target, message)
 
         for plugin in self.plugins:
             if getattr(plugin, "on_privmsg", None):
-                plugin.on_privmsg(serv, source=source, target=target, message=message, key=key, value=value)
+                plugin.on_privmsg(serv, msg)
+
+    def on_quit(self, serv, ev):
+        name = irclib.nm_to_n(ev.source())
+        chan = ev.target()
+
+        connection = self.disconnect_user(name, chan)
+
+        for plugin in self.plugins:
+            if getattr(plugin, "on_quit", None):
+                plugin.on_quit(serv, connection=connection)
 
     def _get_plugins(self):
         plugins = []
-        for path, plugin_class in self.conf.get("plugins", {}).iteritems():
+        for path, plugin_class in env.conf.get("plugins", {}).iteritems():
             module = __import__("taemin.%s" % path, fromlist=[plugin_class])
             plugin = getattr(module, plugin_class)
             plugins.append(plugin(self))
             print "Load plugin: %s" % plugin_class
         return plugins
 
-def main():
-    conf = TaeminConf()
-    Taemin(conf).start()
+    def connect_user(self, name, chan):
+        connection = self.find_connection(name, chan)
+        connection.connected_at = datetime.datetime.now()
+        connection.save()
+        user = connection.user
+        user.online = True
+        user.save()
+        return connection
 
+    def disconnect_user(self, name, chan):
+        connection = self.find_connection(name, chan)
+        connection.disconnected_at = datetime.datetime.now()
+        connection.save()
+        user = connection.user
+        user.online = False
+        user.save()
+        return connection
+
+
+    def list_users(self, chan):
+        return schema.User.select().where(schema.User.online == True).join(schema.Connection).where(schema.Connection.chan == chan)
+
+    def find_chan(self, name):
+        chan, test = schema.Chan.get_or_create(name=name)
+        return chan
+
+    def find_user(self, name):
+        try:
+            user = schema.User.get(schema.User.name % name)
+        except schema.User.DoesNotExist:
+            user = schema.User.create(name=name)
+        return user
+
+    def find_connection(self, name, chan):
+        chan = self.find_chan(chan)
+        user = self.find_user(name)
+
+        connection, test = schema.Connection.get_or_create(user=user, chan=chan)
+        return connection
+
+    def create_pub_message(self, source, target, message):
+        key, value = self.parse_message(message)
+        chan = self.find_chan(target)
+        user = self.find_user(source)
+
+        mesg = schema.Message.create(user=user, message=message, key=key, value=value, chan=chan)
+
+        hl = []
+        for user in self.list_users(chan):
+            if re.compile("^.*" + user.name.lower() + ".*$").match(message.lower()):
+                hl.append(user)
+        mesg.highlights.add(hl)
+
+        return mesg
+
+    def create_priv_message(self, source, target, message):
+        key, value = self.parse_message(message)
+        user = self.find_user(source)
+
+        mesg = schema.Message.create(user=user, message=message, key=key, value=value, target=target)
+        return mesg
+
+    def parse_message(self, message):
+        m = re.search("^!(\S+)\s*(.*)$", message)
+        if m:
+            key = m.group(1).lower()
+            value = m.group(2)
+        else:
+            key = None
+            value = None
+
+        return key, value
+
+def main():
+    name = "Ningirsu"
+    chan = "#miku"
+
+    taemin = Taemin()
+
+    print taemin.find_connection(name, chan)
+    print taemin.find_connection("Schnaffon", chan)
+    print taemin.create_pub_message("Ningirsu", "coucou schnaffon :)", chan)
 
 if __name__ == "__main__":
     main()

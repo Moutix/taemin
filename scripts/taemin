@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from taemin import taemin
+from taemin import bot
 
 if __name__ == "__main__":
-    taemin()
+    bot.Taemin().start()
 
 
