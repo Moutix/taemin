@@ -27,23 +27,22 @@ class TaeminMemory(object):
             m = re.search("^(\S+)\s*(.*)$", msg.value)
             if m:
                 nick = m.group(1)
-                msg = m.group(2)
-                if nick in self.taemin.channels[chan].users():
-                    serv.privmsg(chan, nick + ": " + msg)
+                val = m.group(2)
+                if nick.lower() in [user.lower() for user in self.taemin.list_user_name(chan)]:
+                    serv.privmsg(chan, nick + ": " + val)
                 else:
                     if not self.offline_messages.get(nick.lower()):
                         self.offline_messages[nick.lower()] = []
-                    self.offline_messages[nick.lower()].append(datetime.now().strftime('%H:%M:%S') + " [" + source + "] " + nick + ": " + msg)
+                    self.offline_messages[nick.lower()].append(datetime.now().strftime('%H:%M:%S') + " [" + source + "] " + nick + ": " + val)
 
             else:
                 serv.privmsg(chan, "[Say] Usage : Pseudo + message, ex : !say Taemin Tu es magnifique")
 
         for user in msg.highlights:
-            if re.compile("^.*" + user.name.lower() + ".*$").match(msg.message.lower()):
-                if user not in self.taemin.channels[chan].users():
-                    if not self.offline_messages.get(user.lower()):
-                        self.offline_messages[user.lower()] = []
+            if not user.online:
+                if not self.offline_messages.get(user.name.lower()):
+                    self.offline_messages[user.name.lower()] = []
 
-                    self.offline_messages[user.name.lower()].append(datetime.now().strftime('%H:%M:%S') + " [" + source + "] " + msg.message)
+                self.offline_messages[user.name.lower()].append(datetime.now().strftime('%H:%M:%S') + " [" + source + "] " + msg.message)
 
 

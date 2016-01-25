@@ -70,7 +70,7 @@ class Taemin(ircbot.SingleServerIRCBot):
             if getattr(plugin, "on_privmsg", None):
                 plugin.on_privmsg(serv, msg)
 
-    def on_quit(self, serv, ev):
+    def on_part(self, serv, ev):
         name = irclib.nm_to_n(ev.source())
         chan = ev.target()
 
@@ -110,6 +110,10 @@ class Taemin(ircbot.SingleServerIRCBot):
 
     def list_users(self, chan):
         return schema.User.select().where(schema.User.online == True).join(schema.Connection).where(schema.Connection.chan == chan)
+
+    def list_user_name(self, chan):
+        chan = self.find_chan(chan)
+        return [user.name for user in self.list_users(chan)]
 
     def find_chan(self, name):
         chan, test = schema.Chan.get_or_create(name=name)
@@ -171,6 +175,7 @@ def main():
     print taemin.find_connection(name, chan)
     print taemin.find_connection("Schnaffon", chan)
     print taemin.create_pub_message("Ningirsu", "coucou schnaffon :)", chan)
+    print taemin.list_user_name("#miku")
 
 if __name__ == "__main__":
     main()

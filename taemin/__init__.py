@@ -12,6 +12,22 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+
+class MyLogger(object):
+    def __init__(self, logger, level):
+        """Needs a logger and a logger level."""
+        self.logger = logger
+        self.level = level
+
+    def write(self, message):
+        # Only log if there is a message (not just a new line)
+        if message.rstrip() != "":
+            self.logger.log(self.level, message.rstrip())
+
+    def flush(self):
+        pass
+
+
 class Env(object):
     def __init__(self):
         self.conf = conf.TaeminConf().config
@@ -22,7 +38,6 @@ class Env(object):
                            user=db_conf.get("user"),
                            password=db_conf.get("password"),
                            host=db_conf.get("host"))
-        print "prout"
 
         self.log = self.init_logger()
 
@@ -36,6 +51,9 @@ class Env(object):
         formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
+
+        sys.stdout = MyLogger(logger, logging.INFO)
+        sys.stderr = MyLogger(logger, logging.ERROR)
         return logger
 
 env = Env()

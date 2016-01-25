@@ -8,8 +8,6 @@ class DataBase(object):
         self.user = user
         self.password = password
         self.host = host
-        print self.name
-        print self.type_
 
         self.db = self.init_db()
 
@@ -28,6 +26,7 @@ class DataBase(object):
             db = MySQLDatabase(self.name, user=self.user, password=self.password, host=self.host)
         else:
             db = SqliteDatabase(":memory:")
+        return db
 
 if __name__ == "__main__":
     database = DataBase("sqlite", "test.db")
