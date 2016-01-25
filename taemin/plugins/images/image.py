@@ -4,6 +4,13 @@
 import requests
 import random
 
+class GoogleError(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
 class ImageSearch(object):
     URL = "https://www.googleapis.com/customsearch/v1"
 
@@ -23,10 +30,17 @@ class ImageSearch(object):
         else:
             self.word = word
 
-        self.html = self._get_json()
-        self.images = self._get_images()
-        self.image = self._get_image()
-        self.tiny = self._url_to_tiny()
+        try:
+            self.html = self._get_json()
+        except GoogleError as err:
+            self.html = None
+            self.image = err
+            self.tiny = err
+
+        if self.html:
+            self.images = self._get_images()
+            self.image = self._get_image()
+            self.tiny = self._url_to_tiny()
 
     def _get_json(self, rsz=10):
         data = {"cx": self.apicx,
@@ -37,7 +51,10 @@ class ImageSearch(object):
         try:
             request = requests.get(self.URL, params=data)
         except requests.exceptions.RequestException as err:
-            return {}
+            raise GoogleError(err)
+
+        if request.json.get("error"):
+            raise GoogleError(request.json["error"].get("message"))
 
         return request.json
 
@@ -61,6 +78,7 @@ class ImageSearch(object):
 
 def main():
     image = ImageSearch("", "")
+    image.word = "taemin"
 
 if __name__ == "__main__":
     main()

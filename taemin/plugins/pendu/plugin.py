@@ -46,6 +46,6 @@ class TaeminPendu(object):
             return
 
         self.pendu.new_word(0, msg.value)
-        for chan in msg.user.chans:
-            serv.privmsg(chan.name, "Nouveau pendu: %s" % self.pendu.print_word())
+        for connection in msg.user.connections:
+            serv.privmsg(connection.chan.name, "Nouveau pendu: %s" % self.pendu.print_word())
 

@@ -77,8 +77,8 @@ class Taemin(ircbot.SingleServerIRCBot):
         connection = self.disconnect_user_from_chan(name, chan)
 
         for plugin in self.plugins:
-            if getattr(plugin, "on_quit", None):
-                plugin.on_quit(serv, connection=connection)
+            if getattr(plugin, "on_part", None):
+                plugin.on_part(serv, connection=connection)
 
     def on_quit(self, serv, ev):
         name = irclib.nm_to_n(ev.source())
