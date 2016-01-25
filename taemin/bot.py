@@ -74,11 +74,20 @@ class Taemin(ircbot.SingleServerIRCBot):
         name = irclib.nm_to_n(ev.source())
         chan = ev.target()
 
-        connection = self.disconnect_user(name, chan)
+        connection = self.disconnect_user_from_chan(name, chan)
 
         for plugin in self.plugins:
             if getattr(plugin, "on_quit", None):
                 plugin.on_quit(serv, connection=connection)
+
+    def on_quit(self, serv, ev):
+        name = irclib.nm_to_n(ev.source())
+
+        user = self.disconnect_user(name)
+
+        for plugin in self.plugins:
+            if getattr(plugin, "on_quit", None):
+                plugin.on_quit(serv, user)
 
     def _get_plugins(self):
         plugins = []
@@ -98,7 +107,7 @@ class Taemin(ircbot.SingleServerIRCBot):
         user.save()
         return connection
 
-    def disconnect_user(self, name, chan):
+    def disconnect_user_from_chan(self, name, chan):
         connection = self.find_connection(name, chan)
         connection.disconnected_at = datetime.datetime.now()
         connection.save()
@@ -107,6 +116,13 @@ class Taemin(ircbot.SingleServerIRCBot):
         user.save()
         return connection
 
+    def disconnect_user(self, name):
+        user = self.find_user(name)
+        user.online = False
+        user.save()
+        query = schema.Connection.update(disconnected_at=datetime.datetime.now()).where(schema.Connection.user == user)
+        query.execute()
+        return user
 
     def list_users(self, chan):
         return schema.User.select().where(schema.User.online == True).join(schema.Connection).where(schema.Connection.chan == chan)

@@ -33,11 +33,11 @@ class Env(object):
         self.conf = conf.TaeminConf().config
         db_conf = self.conf.get("database", {})
 
-        self.db = database.DataBase(db_conf.get("type"),
-                           name=db_conf.get("name"),
-                           user=db_conf.get("user"),
-                           password=db_conf.get("password"),
-                           host=db_conf.get("host"))
+        self.db = database.DataBase(db_conf.get("type", "mysql"),
+                           name=db_conf.get("name", "/etc/taemin/taemin.db"),
+                           user=db_conf.get("user", ""),
+                           password=db_conf.get("password", ""),
+                           host=db_conf.get("host", "localhost"))
 
         self.log = self.init_logger()
 

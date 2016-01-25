@@ -34,8 +34,8 @@ class Message(env.db.basemodel):
     created_at = DateTimeField(default=datetime.datetime.now)
 
 User.create_table(True)
-Message.create_table(True)
 Chan.create_table(True)
+Message.create_table(True)
 Connection.create_table(True)
 UserMessage = Message.highlights.get_through_model()
 UserMessage.create_table(True)
