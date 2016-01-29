@@ -11,11 +11,11 @@ class TaeminCafe(object):
 
         chan = msg.chan.name
 
-        message = " ".join([user.name for user in self.taemin.list_users(chan)])
+        message = " ".join([user.name for user in self.taemin.list_users(msg.chan)])
         if msg.key == "cafe":
             message = "<<< CAFE !!! \\o/ %s \\o/ !!! CAFE >>>" % message
         else:
-            msg.key = "%s %s" % (message, msg.value)
+            message = "%s %s" % (message, msg.value)
 
         serv.privmsg(chan, message)
 
