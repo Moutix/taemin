@@ -20,6 +20,7 @@ class Taemin(ircbot.SingleServerIRCBot):
         ircbot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
 
         self.plugins = self._get_plugins()
+        self.user_init = {}
 
     def on_welcome(self, serv, ev):
         query = schema.User.update(online=False)
@@ -29,6 +30,7 @@ class Taemin(ircbot.SingleServerIRCBot):
 
         for chan in self.chans:
             serv.join(chan)
+            self.user_init[chan] = False
 
     def on_join(self, serv, ev):
         source = irclib.nm_to_n(ev.source())
@@ -36,12 +38,6 @@ class Taemin(ircbot.SingleServerIRCBot):
             return
 
         chan = ev.target()
-        for name in self.channels[chan].users():
-            connection = self.find_connection(name, chan)
-            user = connection.user
-            user.online = True
-            user.save()
-
         connection = self.connect_user(source, chan)
 
         for plugin in self.plugins:
@@ -52,6 +48,8 @@ class Taemin(ircbot.SingleServerIRCBot):
         source = irclib.nm_to_n(ev.source())
         target = ev.target()
         message = ev.arguments()[0]
+        if not self.user_init[target]:
+            self.init_users(target)
 
         msg = self.create_pub_message(source, target, message)
 
@@ -95,8 +93,17 @@ class Taemin(ircbot.SingleServerIRCBot):
             module = __import__("taemin.%s" % path, fromlist=[plugin_class])
             plugin = getattr(module, plugin_class)
             plugins.append(plugin(self))
-            print "Load plugin: %s" % plugin_class
+            env.log.info("Load plugin: %s" % plugin_class)
         return plugins
+
+
+    def init_users(self, chan):
+        for name in self.channels[chan].users():
+            connection = self.find_connection(name, chan)
+            user = connection.user
+            user.online = True
+            user.save()
+        self.user_init[chan] = True
 
     def connect_user(self, name, chan):
         connection = self.find_connection(name, chan)
@@ -124,8 +131,11 @@ class Taemin(ircbot.SingleServerIRCBot):
         query.execute()
         return user
 
-    def list_users(self, chan):
-        return schema.User.select().where(schema.User.online == True).join(schema.Connection).where(schema.Connection.chan == chan)
+    def list_users(self, chan, online=True):
+        if online:
+            return schema.User.select().where(schema.User.online == True).join(schema.Connection).where(schema.Connection.chan == chan)
+        else:
+            return schema.User.select().join(schema.Connection).where(schema.Connection.chan == chan)
 
     def list_user_name(self, chan):
         chan = self.find_chan(chan)
@@ -157,7 +167,7 @@ class Taemin(ircbot.SingleServerIRCBot):
         mesg = schema.Message.create(user=user, message=message, key=key, value=value, chan=chan)
 
         hl = []
-        for user in self.list_users(chan):
+        for user in self.list_users(chan, online=None):
             if re.compile("^.*" + user.name.lower() + ".*$").match(message.lower()):
                 hl.append(user)
         mesg.highlights.add(hl)
@@ -187,11 +197,6 @@ def main():
     chan = "#miku"
 
     taemin = Taemin()
-
-    print taemin.find_connection(name, chan)
-    print taemin.find_connection("Schnaffon", chan)
-    print taemin.create_pub_message("Ningirsu", "coucou schnaffon :)", chan)
-    print taemin.list_user_name("#miku")
 
 if __name__ == "__main__":
     main()

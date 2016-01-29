@@ -25,6 +25,10 @@ class Env(object):
                            host=db_conf.get("host", "localhost"))
 
         self.log = self.init_logger()
+        sys.excepthook = self.handler_exception
+
+    def handler_exception(self, type, value, tb):
+        self.log.exception("Uncaught exception: {0}".format(str(value)))
 
     def init_logger(self):
         filename = self.conf.get("general", {}).get("log_file", "/var/log/taemin.log")
