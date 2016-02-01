@@ -2,6 +2,8 @@
 # -*- coding: utf8 -*-
 
 class TaeminAscii(object):
+    helper = {"taeminnie": "M'affiche dans ma plus belle forme <3",
+              "shinee": "Affiche le groupe le plus joli du monde"}
     def __init__(self, taemin):
         self.taemin = taemin
 

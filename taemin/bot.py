@@ -6,7 +6,7 @@ import ircbot
 import re
 import datetime
 
-from taemin import env, schema
+from taemin import env, schema, conf
 
 class Taemin(ircbot.SingleServerIRCBot):
     def __init__(self):
@@ -52,6 +52,16 @@ class Taemin(ircbot.SingleServerIRCBot):
             self.init_users(target)
 
         msg = self.create_pub_message(source, target, message)
+
+        if msg.key == "help":
+            helper = {}
+            for plugin in self.plugins:
+                if getattr(plugin, "helper", None):
+                    helper.update(plugin.helper)
+            if msg.value in helper:
+                serv.privmsg(target, helper[msg.value])
+            else:
+                serv.privmsg(target, "Usage: !help %s" % "|".join(helper.keys()))
 
         for plugin in self.plugins:
             if getattr(plugin, "on_pubmsg", None):
@@ -191,6 +201,10 @@ class Taemin(ircbot.SingleServerIRCBot):
             value = None
 
         return key, value
+
+    def reload_conf(self):
+        self.conf = conf.TaeminConf().config
+        self.plugins = self._get_plugins()
 
 def main():
     name = "Ningirsu"

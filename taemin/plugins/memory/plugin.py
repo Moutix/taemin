@@ -6,6 +6,8 @@ import os
 from datetime import datetime
 
 class TaeminMemory(object):
+    helper = {"say": "Me fait dire quelque chose à quelqu'un"}
+
     def __init__(self, taemin):
         self.taemin = taemin
         self.offline_messages = {}

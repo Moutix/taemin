@@ -4,6 +4,8 @@
 from pendu import Pendu
 
 class TaeminPendu(object):
+    helper = {"pendu": "Joue au pendu"}
+
     def __init__(self, taemin):
         self.taemin = taemin
         self.pendu = Pendu()

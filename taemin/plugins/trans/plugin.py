@@ -4,6 +4,8 @@
 from trans import Transliterate
 
 class TaeminTrans(object):
+    helper = {"trans": "Translitère dans un autre alphabet. Usage: !trans alphabet mot"}
+
     def __init__(self, taemin):
         self.taemin = taemin
 

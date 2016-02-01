@@ -4,6 +4,8 @@
 from loveletter import LoveLetter
 
 class TaeminLoveLetter(object):
+    helper = {"loveletter": "Joue à loveletter. Usage: !loveletter start|join|restart|play"}
+
     def __init__(self, taemin):
         self.taemin = taemin
         self.loveletter = LoveLetter()

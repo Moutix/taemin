@@ -22,6 +22,8 @@ class Timer(Thread):
         self.taemin.connection.privmsg(self.chan, self.msg)
 
 class TaeminTimer(object):
+    helper = {"timer": "Dit un mot dans x seconde. Usage: !timer seconde message"}
+
     def __init__(self, taemin):
         self.taemin = taemin
         self.nb_timer = 0

@@ -4,6 +4,8 @@
 from singe import Singe
 
 class TaeminSinge(object):
+    helper = {"singe": "Joue au singe. Usage: !singe lettre"}
+
     def __init__(self, taemin):
         self.taemin = taemin
         self.singe = Singe()

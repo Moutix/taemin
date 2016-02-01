@@ -4,6 +4,8 @@
 from trad import Traduction
 
 class TaeminTrad(object):
+    helper = {"trad": "Traduit une phrase. Usage: !trad langue1 langue2 mot"}
+
     def __init__(self, taemin):
         self.taemin = taemin
 

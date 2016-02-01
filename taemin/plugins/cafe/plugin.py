@@ -2,6 +2,10 @@
 # -*- coding: utf8 -*-
 
 class TaeminCafe(object):
+    helper = {"all": "Envoie un message à tout le monde",
+              "cafe": "Appelle tout le monde pour prendre un café ;)"}
+
+
     def __init__(self, taemin):
         self.taemin = taemin
 

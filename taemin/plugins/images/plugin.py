@@ -6,6 +6,9 @@ from image import ImageSearch
 from taemin import env
 
 class TaeminImage(object):
+    helper = {"donne": "Recherche sur google image",
+              "give": "Recherche sur google image"}
+
     def __init__(self, taemin):
         self.taemin = taemin
         self.confapi = env.conf.get("googleApi", {})
