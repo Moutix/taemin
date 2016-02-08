@@ -36,13 +36,13 @@ class TaeminAkinator(object):
 
         if self.akinators[user].progression > 99:
             self.akinators[user].result()
-            serv.privmsg(chan, "\o/ %s (%s)" % (self.akinators[user].name, self.akinators[user].description))
+            serv.privmsg(chan, "\o/ %s (%s) %s" % (self.akinators[user].name, self.akinators[user].description, self.akinators[user].image))
             self.akinators[user] = Akinator()
             return
 
         if self.akinators[user].step > 30:
             self.akinators[user].result()
-            serv.privmsg(chan, "Ragequit ^^' je dirais : %s (%s)" % (self.akinators[user].name, self.akinators[user].description))
+            serv.privmsg(chan, "Ragequit ^^' je dirais : %s (%s) %s" % (self.akinators[user].name, self.akinators[user].description, self.akinators[user].image))
             self.akinators[user] = Akinator()
             return
 

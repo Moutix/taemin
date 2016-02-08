@@ -11,7 +11,8 @@ class Akinator(object):
         self.question = None
         self.progression = 0
         self.name = None
-        self.descrition = None
+        self.description = None
+        self.image = None
         self.session, self.signature = self.init_session()
 
     def requests(self, path, method="GET", params=None, data=None):
@@ -44,6 +45,7 @@ class Akinator(object):
         result = res.get("parameters", {}).get("elements", [])[0].get("element", {})
         self.name = result.get("name", "").encode("utf-8")
         self.description = result.get("description", "").encode("utf-8")
+        self.image = result.get("absolute_picture_path", "").encode("utf-8")
 
 def main():
     akinator = Akinator()
