@@ -25,15 +25,13 @@ class Taemin(ircbot.SingleServerIRCBot):
     def on_welcome(self, serv, ev):
         query = schema.User.update(online=False)
         query.execute()
-        query = schema.Connection.delete()
-        query.execute()
 
         for chan in self.chans:
             serv.join(chan)
             self.user_init[chan] = False
 
     def on_join(self, serv, ev):
-        source = irclib.nm_to_n(ev.source())
+        source = self.get_nickname(irclib.nm_to_n(ev.source()))
         if source == self.name:
             return
 
@@ -45,7 +43,7 @@ class Taemin(ircbot.SingleServerIRCBot):
                 plugin.on_join(serv, connection)
 
     def on_pubmsg(self, serv, ev):
-        source = irclib.nm_to_n(ev.source())
+        source = self.get_nickname(irclib.nm_to_n(ev.source()))
         target = ev.target()
         message = ev.arguments()[0]
         if not self.user_init[target]:
@@ -68,7 +66,7 @@ class Taemin(ircbot.SingleServerIRCBot):
                 plugin.on_pubmsg(serv, msg)
 
     def on_privmsg(self, serv, ev):
-        source = irclib.nm_to_n(ev.source())
+        source = self.get_nickname(irclib.nm_to_n(ev.source()))
         target = ev.target()
         message = ev.arguments()[0]
 
@@ -79,7 +77,7 @@ class Taemin(ircbot.SingleServerIRCBot):
                 plugin.on_privmsg(serv, msg)
 
     def on_part(self, serv, ev):
-        name = irclib.nm_to_n(ev.source())
+        name = self.get_nickname(irclib.nm_to_n(ev.source()))
         chan = ev.target()
 
         connection = self.disconnect_user_from_chan(name, chan)
@@ -89,8 +87,7 @@ class Taemin(ircbot.SingleServerIRCBot):
                 plugin.on_part(serv, connection=connection)
 
     def on_quit(self, serv, ev):
-        name = irclib.nm_to_n(ev.source())
-
+        name = self.get_nickname(irclib.nm_to_n(ev.source()))
         user = self.disconnect_user(name)
 
         for plugin in self.plugins:
@@ -109,6 +106,7 @@ class Taemin(ircbot.SingleServerIRCBot):
 
     def init_users(self, chan):
         for name in self.channels[chan].users():
+            name = self.get_nickname(name)
             connection = self.find_connection(name, chan)
             user = connection.user
             user.online = True
@@ -205,6 +203,11 @@ class Taemin(ircbot.SingleServerIRCBot):
     def reload_conf(self):
         self.conf = conf.TaeminConf().config
         self.plugins = self._get_plugins()
+
+    def get_nickname(self, nick):
+        if nick[0] in ("~", "&", "@", "%"):
+            return nick[1:]
+        return nick
 
 def main():
     name = "Ningirsu"
