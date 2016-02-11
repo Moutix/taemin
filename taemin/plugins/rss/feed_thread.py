@@ -22,7 +22,6 @@ class FeedThread(Thread):
             env.log.warning(feeds["bozo_exception"])
         else:
             self.name = feeds.feed.get("title", self.name)
-            env.log.info("Successfuly add feed %s" % self.name)
 
         return feeds
 
@@ -42,7 +41,7 @@ class FeedThread(Thread):
         while True:
             entries = self.get_entries()
             if len(entries) > 5:
-                entries = entries[-5:]
+                entries = entries[:5]
             for entry in entries:
                 self.callback(self, entry.get("title", "").encode("utf-8"), entry.get("link", "").encode("utf-8"))
             time.sleep(self.refresh)
@@ -51,7 +50,7 @@ def main():
     def callback(feed, title, link):
         print "%s: %s" % (title, link)
 
-    rss = "http://feeds.feedblitz.com/SenorGif"
+    rss = "http://www.animefansftw.org/feed/"
     feed = FeedThread(rss, callback)
     feed.start()
 

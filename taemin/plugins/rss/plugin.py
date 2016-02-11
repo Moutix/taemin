@@ -26,6 +26,7 @@ class TaeminRSS(object):
             feed.start()
 
     def on_pubmsg(self, serv, msg):
+        return
         if msg.key != "rss":
             return
         chan = msg.chan.name
@@ -33,6 +34,7 @@ class TaeminRSS(object):
         values = msg.value.split(" ", 1)
         if len(values) < 1:
             serv.privmsg(chan, "Usage: !rss add http//feed-url/")
+            return
 
         key = values[0]
         value = values[1]
