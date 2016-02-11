@@ -4,6 +4,9 @@
 from bs4 import BeautifulSoup
 import requests
 
+class AkinatorError(Exception):
+    pass
+
 class Akinator(object):
     URL = "http://api-fr1.akinator.com/ws/"
     def __init__(self):
@@ -29,8 +32,10 @@ class Akinator(object):
 
     def parse_response(self, step_info):
         self.question = step_info.get("question")
-        if self.question:
-            self.question = self.question.encode("utf-8")
+        if not self.question:
+            raise AkinatorError()
+
+        self.question = self.question.encode("utf-8")
         self.step = int(step_info.get("step"))
         self.progression = float(step_info.get("progression", "0.0"))
 
