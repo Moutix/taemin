@@ -9,8 +9,8 @@ class TaeminNiceBot(object):
 
     def __init__(self, taemin):
         self.mapping = [
-            (r"""(?:http[s]?://)?(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?""", self._get_youtube),
-            (r"""https?://\S+""", self._get_title),
+            (r"""((?:http[s]?://)?(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?)""", self._get_youtube),
+            (r"""(https?://\S+)""", self._get_title),
         ]
         self.taemin = taemin
 
@@ -33,7 +33,7 @@ class TaeminNiceBot(object):
 
     def _get_title(self, match, text):
         try:
-            html = requests.get(text)
+            html = requests.get(match.group(1))
         except requests.RequestException:
             return None
 
@@ -52,7 +52,7 @@ class TaeminNiceBot(object):
 
     def _get_youtube(self, match, text):
         try:
-            html = requests.get(text).text
+            html = requests.get(match.group(1)).text
         except requests.RequestException:
             return None
 
@@ -81,7 +81,7 @@ class TaeminNiceBot(object):
 
 def main():
     nice = TaeminNiceBot(None)
-    for match in nice.check_generator("https://www.youtube.com/watch?v=0rtV5esQT6I"):
+    for match in nice.check_generator("test ça : https://www.youtube.com/watch?v=0rtV5esQT6I"):
         print match
 
 if __name__ == "__main__":
