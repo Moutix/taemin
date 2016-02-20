@@ -9,6 +9,8 @@ import database
 import logging
 import logging.handlers
 import sys
+import traceback
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -28,7 +30,9 @@ class Env(object):
         sys.excepthook = self.handler_exception
 
     def handler_exception(self, type, value, tb):
-        self.log.exception("Uncaught exception: {0}".format(str(value)))
+        for trace in traceback.format_tb(tb):
+            self.log.error(trace)
+        self.log.error("Uncaught exception: {0}".format(str(value)))
 
     def init_logger(self):
         filename = self.conf.get("general", {}).get("log_file", "/var/log/taemin.log")
