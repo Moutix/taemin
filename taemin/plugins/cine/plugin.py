@@ -114,6 +114,10 @@ class AlloSeance(object):
 
         return None
 
+    @staticmethod
+    def to_str(seances):
+        return ", ".join(["%s (%s)(%s)" % (s.pretty_start(), s.version, s.quality) for s in seances])
+
 
 class AlloCine(object):
     def __init__(self, id, id_ac, name, address):
@@ -121,13 +125,18 @@ class AlloCine(object):
         self.id_ac = id_ac
         self.name = name
         self.address = address
+        self.maps_link = "https://www.google.fr/maps/place/%s/" % urllib.quote(self.address)
 
     def __str__(self):
-        return "<Cine-%s %s>" % (self.id, self.name)
+        return "<cine-%s %s>" % (self.id, self.name)
+
+    def __repr__(self):
+        return "<cine-%s %s>" % (self.id, self.name)
+
 
 class TaeminCine(object):
     helper = {"film": "Recherche un film sur allocine. Usage !film nom",
-              "seances": "Recherche des séances de cinéma. Usage !seance --film --lieu --quality=[VF|VO], --day --cine"}
+              "seances": "Recherches des séances. Usage !seances --film [--lieu] [--version] [--day] [--cine] [--quality]"}
 
     def __init__(self, taemin):
         self.taemin = taemin
@@ -140,7 +149,8 @@ class TaeminCine(object):
         parser.add_option("-q", "--quality", type="string", dest="quality")
         parser.add_option("-v", "--version", type="string", dest="version")
         parser.add_option("-d", "--day", type="string", dest="day", default="today")
-        parser.add_option("-c", "--cine", type="int", dest="cine_id")
+        parser.add_option("-c", "--cine", type="int", dest="cine")
+        parser.add_option("--force", action="store_true", dest="force", default=False)
         return parser
 
     def on_pubmsg(self, serv, msg):
@@ -161,12 +171,12 @@ class TaeminCine(object):
         if msg.key == "seances":
             try:
                 (options, arg) = self.parser.parse_args(shlex.split(msg.value))
-            except OptionParsingError as err:
-                serv.privmsg(chan, "Error in your options: %s" % err)
+            except OptionParsingError, err:
+                serv.privmsg(chan, "Error in your options: %s" % err.msg)
                 return
 
             if not options.film or not options.location:
-                serv.privmsg(chan, "Film and Location are mandatory. Use -f|--film and -l|--lieu")
+                serv.privmsg(chan, self.helper["seances"])
                 return
 
             if not AlloSeance.get_day(options.day):
@@ -178,22 +188,43 @@ class TaeminCine(object):
                 return
 
             film = self.get_film(options.film)
+            if not film:
+                serv.privmsg(chan, "Connais pas ce film.")
+                return
+
             location = self.get_localization(options.location)
+            if not location:
+                serv.privmsg(chan, "Lieu inconnu")
+                return
 
             seances = [seance for seance in self.get_seances(film=film,
                                                              localization=location,
                                                              version=options.version,
                                                              day=options.day,
-                                                             quality=options.quality)]
+                                                             quality=options.quality,
+                                                             cine_id=options.cine)]
+
             serv.privmsg(chan, "Seance pour le film %s (%s) à %s: %s" % (film.name, film.year, location.name, film.link))
             if not seances:
                 serv.privmsg(chan, "Pas de séance pour ce film avec ces paramètres")
                 return
 
+            if options.cine:
+                cine = seances[0].cine
+                serv.privmsg(chan, "Seance pour le cinéma %s (%s): %s" % (cine.name, cine.address, cine.maps_link))
+                serv.privmsg(chan, AlloSeance.to_str(seances))
+                return
+
+
+            cines = list(set(seance.cine for seance in seances))
+            if len(cines) > 3 and not options.force:
+                for group_cines in [cines[i:i+10] for i in range(0, len(cines), 10)]:
+                    serv.privmsg(chan, ", ".join(["[%s] %s" % (cine.id, cine.name) for cine in group_cines]))
+                return
+
             seances.sort(cmp=lambda x, y: cmp(x.cine, y.cine))
             for key, seance in itertools.groupby(seances, lambda x: x.cine):
-                serv.privmsg(chan, "[%s] %s: %s" % (key.id, key.name, " ".join(["(%s): %s" % (s.version, s.pretty_start()) for s in seance])))
-
+                serv.privmsg(chan, "[%s] %s: %s" % (key.id, key.name, AlloSeance.to_str(seance)))
 
     def get_film(self, film):
         res = self.get_films(film)
