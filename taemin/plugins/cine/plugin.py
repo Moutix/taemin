@@ -136,7 +136,7 @@ class AlloCine(object):
 
 class TaeminCine(object):
     helper = {"film": "Recherche un film sur allocine. Usage !film nom",
-              "seances": "Recherches des séances. Usage !seances --film [--lieu] [--version] [--day] [--cine] [--quality]"}
+              "seances": "Recherche des séances. Usage !seances --film [--lieu] [--version] [--day] [--cine] [--quality]"}
 
     def __init__(self, taemin):
         self.taemin = taemin
@@ -154,7 +154,7 @@ class TaeminCine(object):
         return parser
 
     def on_pubmsg(self, serv, msg):
-        if msg.key not in self.helper:
+        if msg.key not in ("seance", "film", "seances"):
             return
 
         chan = msg.chan.name
@@ -168,7 +168,7 @@ class TaeminCine(object):
             serv.privmsg(chan, "%s - %s (%s): %s" % (film.name, film.year, film.director, film.link))
             return
 
-        if msg.key == "seances":
+        if msg.key in ("seance", "seances"):
             try:
                 (options, arg) = self.parser.parse_args(shlex.split(msg.value))
             except OptionParsingError, err:
@@ -211,7 +211,7 @@ class TaeminCine(object):
 
             if options.cine:
                 cine = seances[0].cine
-                serv.privmsg(chan, "Seance pour le cinéma %s (%s): %s" % (cine.name, cine.address, cine.maps_link))
+                serv.privmsg(chan, "Séances pour le cinéma %s (%s): %s" % (cine.name, cine.address, cine.maps_link))
                 serv.privmsg(chan, AlloSeance.to_str(seances))
                 return
 
