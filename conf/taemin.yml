@@ -30,6 +30,7 @@ plugins:
   plugins.quotation.plugin: "TaeminQuotation"
   plugins.akinator.plugin: "TaeminAkinator"
   plugins.nicebot.plugin: "TaeminNiceBot"
+  plugins.cine.plugin: "TaeminCine"
 
 ImageSearch:
   taemin:
