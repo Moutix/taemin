@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
+import re
 import requests
 import urllib
 import dateutil.parser
@@ -8,6 +9,8 @@ from datetime import date, timedelta
 import shlex
 from optparse import OptionParser
 import itertools
+from bs4 import BeautifulSoup
+import json
 
 class OptionParsingError(RuntimeError):
     def __init__(self, msg):
@@ -136,7 +139,8 @@ class AlloCine(object):
 
 class TaeminCine(object):
     helper = {"film": "Recherche un film sur allocine. Usage !film nom",
-              "seances": "Recherche des séances. Usage !seances --film [--lieu] [--version] [--day] [--cine] [--quality]"}
+              "seances": "Recherche des séances. Usage !seances --film [--lieu] [--version] [--day] [--cine] [--quality]",
+              "onscreen": "Affiche les films passant au cinéma en ce moment. Usage !onscreen page"}
 
     def __init__(self, taemin):
         self.taemin = taemin
@@ -154,10 +158,20 @@ class TaeminCine(object):
         return parser
 
     def on_pubmsg(self, serv, msg):
-        if msg.key not in ("seance", "film", "seances"):
+        if msg.key not in ("seance", "film", "seances", "onscreen"):
             return
 
         chan = msg.chan.name
+
+        if msg.key == "onscreen":
+            page = 1
+            if re.search(r"""\d+""", msg.value):
+                page = int(msg.value)
+
+            films = self.get_current_films(page)
+
+            serv.privmsg(chan, "Au cinéma: %s" % ", ".join(films))
+            return
 
         if msg.key == "film":
             film = self.get_film(msg.value)
@@ -225,6 +239,21 @@ class TaeminCine(object):
             seances.sort(cmp=lambda x, y: cmp(x.cine, y.cine))
             for key, seance in itertools.groupby(seances, lambda x: x.cine):
                 serv.privmsg(chan, "[%s] %s: %s" % (key.id, key.name, AlloSeance.to_str(seance)))
+
+    def get_current_films(self, page=1):
+        try:
+            res = requests.get("http://www.allocine.fr/film/aucinema/", params={"page": page})
+        except requests.RequestException:
+            return []
+
+        try:
+            html = res.text
+        except TypeError:
+            return None
+
+        html = BeautifulSoup(html, 'html.parser')
+
+        return [json.loads(item["data-entities"]).get("label") for item in html.find_all('h2', attrs={'data-entities': True})]
 
     def get_film(self, film):
         res = self.get_films(film)
@@ -348,8 +377,10 @@ def main():
     print cine.get_films("")
     print cine.get_localizations("antony")
 
-    for seance in cine.get_seances("start", "antony", "VO", day="today", cine_id=364):
-        print seance
+#    for seance in cine.get_seances("start", "antony", "VO", day="today", cine_id=364):
+#        print seance
+
+    print cine.get_current_films()
 
 if __name__ == "__main__":
     main()
