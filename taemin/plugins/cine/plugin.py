@@ -139,7 +139,7 @@ class AlloCine(object):
 
 class TaeminCine(object):
     helper = {"film": "Recherche un film sur allocine. Usage !film nom",
-              "seances": "Recherche des séances. Usage !seances film [--lieu] [--version] [--day] [--cine] [--quality]",
+              "seances": "Recherche des séances. Usage !seances film [--lieu=Paris] [--version] [--day=today] [--cine] [--quality] [--page=1]",
               "onscreen": "Affiche les films passant au cinéma en ce moment. Usage !onscreen page"}
 
     def __init__(self, taemin):
@@ -153,6 +153,7 @@ class TaeminCine(object):
         parser.add_option("-v", "--version", type="string", dest="version")
         parser.add_option("-d", "--day", type="string", dest="day", default="today")
         parser.add_option("-c", "--cine", type="int", dest="cine")
+        parser.add_option("-p", "--page", type="int", dest="page", default=1)
         parser.add_option("--force", action="store_true", dest="force", default=False)
         return parser
 
@@ -223,7 +224,8 @@ class TaeminCine(object):
                                                              version=options.version,
                                                              day=options.day,
                                                              quality=options.quality,
-                                                             cine_id=options.cine)]
+                                                             cine_id=options.cine,
+                                                             page=options.page)]
 
             serv.privmsg(chan, "Seance pour le film %s (%s) à %s: %s" % (film.name, film.year, location.name, film.link))
             if not seances:
@@ -318,7 +320,7 @@ class TaeminCine(object):
                                    localization.get("name", "").encode("utf-8"),
                                    localization.get("zip_code", "").encode("utf-8"))
 
-    def get_seances(self, film, localization, version=None, day=None, quality=None, cine_id=None):
+    def get_seances(self, film, localization, version=None, day=None, quality=None, cine_id=None, page=1):
         if isinstance(film, str):
             film = self.get_film(film)
         if isinstance(localization, str):
@@ -327,7 +329,7 @@ class TaeminCine(object):
             return
 
         try:
-            res = requests.get("http://www.allocine.fr/_/showtimes/movie-%s/near-%s/" % (film.id, localization.id))
+            res = requests.get("http://www.allocine.fr/_/showtimes/movie-%s/near-%s/" % (film.id, localization.id), params={"page": page})
         except requests.RequestException:
             return
 
