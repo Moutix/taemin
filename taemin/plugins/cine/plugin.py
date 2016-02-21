@@ -139,7 +139,7 @@ class AlloCine(object):
 
 class TaeminCine(object):
     helper = {"film": "Recherche un film sur allocine. Usage !film nom",
-              "seances": "Recherche des séances. Usage !seances --film [--lieu] [--version] [--day] [--cine] [--quality]",
+              "seances": "Recherche des séances. Usage !seances film [--lieu] [--version] [--day] [--cine] [--quality]",
               "onscreen": "Affiche les films passant au cinéma en ce moment. Usage !onscreen page"}
 
     def __init__(self, taemin):
@@ -148,7 +148,6 @@ class TaeminCine(object):
 
     def _get_opt_parser(self):
         parser = CustomOptionParser()
-        parser.add_option("-f", "--film", type="string", dest="film")
         parser.add_option("-l", "--lieu", type="string", dest="location", default="paris")
         parser.add_option("-q", "--quality", type="string", dest="quality")
         parser.add_option("-v", "--version", type="string", dest="version")
@@ -184,14 +183,22 @@ class TaeminCine(object):
 
         if msg.key in ("seance", "seances"):
             try:
-                (options, arg) = self.parser.parse_args(shlex.split(msg.value))
+                values = shlex.split(msg.value)
+            except ValueError as msg:
+                serv.privmsg(chan, "Error in your args: %s" %msg)
+                return
+
+            try:
+                (options, args) = self.parser.parse_args(values)
             except OptionParsingError, err:
                 serv.privmsg(chan, "Error in your options: %s" % err.msg)
                 return
 
-            if not options.film or not options.location:
+            if not options.location or not args:
                 serv.privmsg(chan, self.helper["seances"])
                 return
+
+            film = " ".join(args)
 
             if not AlloSeance.get_day(options.day):
                 serv.privmsg(chan, "Accepted values for day: %s" % "|".join(AlloSeance.WEEK_DAY.keys() + ["today", "tomorrow", "aujourd'hui", "demain"]))
@@ -201,7 +208,7 @@ class TaeminCine(object):
                 serv.privmsg(chan, "Accepted values for version %s" % "|".join(AlloSeance.MAP_VERSIONS.values()))
                 return
 
-            film = self.get_film(options.film)
+            film = self.get_film(film)
             if not film:
                 serv.privmsg(chan, "Connais pas ce film.")
                 return
