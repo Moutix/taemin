@@ -31,6 +31,8 @@ plugins:
   plugins.akinator.plugin: "TaeminAkinator"
   plugins.nicebot.plugin: "TaeminNiceBot"
   plugins.cine.plugin: "TaeminCine"
+  plugins.pause.plugin: "TaeminPause"
+  plugins.dico.plugin: "TaeminDico"
 
 ImageSearch:
   taemin:
