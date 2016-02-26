@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 
 from threading import Thread
+from taemin import plugin
 import time
 import re
 
@@ -21,14 +22,14 @@ class Timer(Thread):
         time.sleep(self._time)
         self.taemin.connection.privmsg(self.chan, self.msg)
 
-class TaeminTimer(object):
+class TaeminTimer(plugin.TaeminPlugin):
     helper = {"timer": "Dit un mot dans x seconde. Usage: !timer seconde message"}
 
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.nb_timer = 0
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         if msg.key != "timer":
             return
         chan = msg.chan.name
@@ -44,7 +45,7 @@ class TaeminTimer(object):
             msg = "[Timer %d] Fin : %s" % (self.nb_timer, msg)
             timer = Timer(self.taemin, _time, chan, msg)
             timer.start()
-            serv.privmsg(chan, "[Timer %d] Démarre pour %s secondes" % (self.nb_timer, _time))
+            self.privmsg(chan, "[Timer %d] Démarre pour %s secondes" % (self.nb_timer, _time))
         else:
-            serv.privmsg(chan, "[Timer] Usage : Temps (en s) + message (facultatif), ex : !timer 666 Pouet")
+            self.privmsg(chan, "[Timer] Usage : Temps (en s) + message (facultatif), ex : !timer 666 Pouet")
 

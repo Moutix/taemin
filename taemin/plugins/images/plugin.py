@@ -3,11 +3,11 @@
 
 import re
 from image import ImageSearch
-from taemin import env, schema
+from taemin import env, schema, plugin
 from schema_image import Image
 from peewee import fn
 
-class TaeminImage(object):
+class TaeminImage(plugin.TaeminPlugin):
     helper = {"donne": "Recherche sur google image",
               "give": "Recherche sur google image",
               "keep": "Sauvegarde l'image. Usage : !keep name",
@@ -15,71 +15,71 @@ class TaeminImage(object):
               "remove_image": "Supprime une image sauvegardé. Usage: !remove_image id"}
 
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.confapi = env.conf.get("googleApi", {})
         self.confimage = env.conf.get("ImageSearch", {})
         self.image = ImageSearch(self.confapi.get("CX"), self.confapi.get("APIKEY"))
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         chan = msg.chan.name
 
         if msg.key == "donne" or msg.key == "give":
             self.image.search(msg.value)
-            serv.privmsg(chan, self.image.tiny)
+            self.privmsg(chan, self.image.tiny)
             return
 
         if msg.key == "keep":
             if msg.value == "":
-                serv.privmsg(chan, self.helper[msg.key])
+                self.privmsg(chan, self.helper[msg.key])
                 return
 
             if not self.image.image:
-                serv.privmsg(chan, "Aucune image en mémoire")
+                self.privmsg(chan, "Aucune image en mémoire")
                 return
 
             self.store(self.image, msg.chan, msg.value)
-            serv.privmsg(chan, "Image store: %s" % self.image.image)
+            self.privmsg(chan, "Image store: %s" % self.image.image)
             return
 
         if msg.key == "image":
             image = self.search_image(msg.value, msg.chan)
             if not image:
-                serv.privmsg(chan, "Aucune image ne correspond")
+                self.privmsg(chan, "Aucune image ne correspond")
                 return
 
-            serv.privmsg(chan, "[#%s: %s] %s: %s" % (image.id, image.name, image.word, image.image))
+            self.privmsg(chan, "[#%s: %s] %s: %s" % (image.id, image.name, image.word, image.image))
 
         if msg.key == "remove_image":
             try:
                 id = int(msg.value)
             except:
-                serv.privmsg(chan, self.helper[msg.key])
+                self.privmsg(chan, self.helper[msg.key])
                 return
 
             image = self.destroy_image(msg.value, msg.chan)
             if not image:
-                serv.privmsg(chan, "Aucune image ne correspond")
+                self.privmsg(chan, "Aucune image ne correspond")
                 return
 
-            serv.privmsg(chan, "Image supprimé: [#%s: %s] %s" % (image.id, image.name, image.image))
+            self.privmsg(chan, "Image supprimé: [#%s: %s] %s" % (image.id, image.name, image.image))
 
 
         for word in self.confimage.keys():
             if re.compile("^.*" + word + ".*$").match(msg.message.lower()):
                 self.image.search(self.confimage[word])
-                serv.privmsg(chan, self.image.tiny)
+                self.privmsg(chan, self.image.tiny)
 
-    def on_privmsg(self, serv, msg):
+    def on_privmsg(self, msg):
         source = msg.user.name
 
         if msg.key == "donne" or msg.key == "give":
             self.image.search(msg.value)
-            serv.privmsg(source, self.image.tiny)
+            self.privmsg(source, self.image.tiny)
 
         for word in self.confimage.keys():
             if re.compile("^.*" + word + ".*$").match(msg.message.lower()):
                 self.image.search(self.confimage[word])
-                serv.privmsg(source, self.image.tiny)
+                self.privmsg(source, self.image.tiny)
 
     def store(self, image, chan, name=""):
         Image.create(chan=chan, name=name, image=image.image, word=image.word, tiny=image.tiny)

@@ -4,21 +4,22 @@
 import re
 import requests
 from bs4 import BeautifulSoup
+from taemin import plugin
 
-class TaeminNiceBot(object):
+class TaeminNiceBot(plugin.TaeminPlugin):
 
     def __init__(self, taemin):
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.mapping = [
             (r"""((?:http[s]?://)?(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?)""", self._get_youtube),
             (r"""(https?://\S+)""", self._get_title),
         ]
-        self.taemin = taemin
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         chan = msg.chan.name
 
         for match in self.check_generator(msg.message):
-            serv.privmsg(chan, match)
+            self.privmsg(chan, match)
 
     def check_generator(self, text):
         for regex, func in self.mapping:

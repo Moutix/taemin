@@ -2,26 +2,26 @@
 # -*- coding: utf8 -*-
 
 import re
-import os
 from datetime import datetime
+from taemin import plugin
 
-class TaeminMemory(object):
+class TaeminMemory(plugin.TaeminPlugin):
     helper = {"say": "Me fait dire quelque chose à quelqu'un"}
 
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.offline_messages = {}
 
-    def on_join(self, serv, connection):
+    def on_join(self, connection):
         source = connection.user.name
         chan = connection.chan.name
 
         if source.lower() in self.offline_messages.keys():
             for msg in self.offline_messages[source.lower()]:
-                serv.privmsg(chan, msg)
+                self.privmsg(chan, msg)
                 self.offline_messages[source.lower()] = []
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         chan = msg.chan.name
         source = msg.user.name
 
@@ -31,14 +31,14 @@ class TaeminMemory(object):
                 nick = m.group(1)
                 val = m.group(2)
                 if nick.lower() in [user.lower() for user in self.taemin.list_user_name(chan)]:
-                    serv.privmsg(chan, nick + ": " + val)
+                    self.privmsg(chan, nick + ": " + val)
                 else:
                     if not self.offline_messages.get(nick.lower()):
                         self.offline_messages[nick.lower()] = []
                     self.offline_messages[nick.lower()].append(datetime.now().strftime('%H:%M:%S') + " [" + source + "] " + nick + ": " + val)
 
             else:
-                serv.privmsg(chan, "[Say] Usage : Pseudo + message, ex : !say Taemin Tu es magnifique")
+                self.privmsg(chan, "[Say] Usage : Pseudo + message, ex : !say Taemin Tu es magnifique")
 
         for user in msg.highlights:
             if not user.online:

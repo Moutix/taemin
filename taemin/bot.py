@@ -39,8 +39,7 @@ class Taemin(ircbot.SingleServerIRCBot):
         connection = self.connect_user(source, chan)
 
         for plugin in self.plugins:
-            if getattr(plugin, "on_join", None):
-                plugin.on_join(serv, connection)
+            plugin.on_join(connection)
 
     def on_pubmsg(self, serv, ev):
         source = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -54,16 +53,14 @@ class Taemin(ircbot.SingleServerIRCBot):
         if msg.key == "help":
             helper = {}
             for plugin in self.plugins:
-                if getattr(plugin, "helper", None):
-                    helper.update(plugin.helper)
+                helper.update(plugin.helper)
             if msg.value in helper:
                 serv.privmsg(target, helper[msg.value])
             else:
                 serv.privmsg(target, "Usage: !help %s" % "|".join(helper.keys()))
 
         for plugin in self.plugins:
-            if getattr(plugin, "on_pubmsg", None):
-                plugin.on_pubmsg(serv, msg)
+            plugin.on_pubmsg(msg)
 
     def on_privmsg(self, serv, ev):
         source = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -73,8 +70,7 @@ class Taemin(ircbot.SingleServerIRCBot):
         msg = self.create_priv_message(source, target, message)
 
         for plugin in self.plugins:
-            if getattr(plugin, "on_privmsg", None):
-                plugin.on_privmsg(serv, msg)
+            plugin.on_privmsg(msg)
 
     def on_part(self, serv, ev):
         name = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -83,16 +79,14 @@ class Taemin(ircbot.SingleServerIRCBot):
         connection = self.disconnect_user_from_chan(name, chan)
 
         for plugin in self.plugins:
-            if getattr(plugin, "on_part", None):
-                plugin.on_part(serv, connection=connection)
+            plugin.on_part(connection)
 
     def on_quit(self, serv, ev):
         name = self.get_nickname(irclib.nm_to_n(ev.source()))
         user = self.disconnect_user(name)
 
         for plugin in self.plugins:
-            if getattr(plugin, "on_quit", None):
-                plugin.on_quit(serv, user)
+            plugin.on_quit(user)
 
     def _get_plugins(self):
         plugins = []

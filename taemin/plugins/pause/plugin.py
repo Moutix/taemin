@@ -2,15 +2,16 @@
 # -*- coding: utf8 -*-
 
 import time
+from taemin import plugin
 
-class TaeminPause(object):
+class TaeminPause(plugin.TaeminPlugin):
     helper = {"pause": "Compte le temps passé en pause ;). Usage: !pause start|stop|restart"}
 
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.users = {}
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         if msg.key not in self.helper:
             return
 
@@ -23,39 +24,39 @@ class TaeminPause(object):
 
         if msg.value == "start":
             if self.users[user]["last_start"]:
-                serv.privmsg(chan, "Ta pause a déjà commencé, profites en !! ;)")
+                self.privmsg(chan, "Ta pause a déjà commencé, profites en !! ;)")
                 return
 
             self.users[user]["last_start"] = time.time()
-            serv.privmsg(chan, "Debut de la pause ! Bouge toi ! ;)")
+            self.privmsg(chan, "Debut de la pause ! Bouge toi ! ;)")
             return
 
         if msg.value == "stop":
             if not self.users[user]["last_start"]:
-                serv.privmsg(chan, "La pause a pas encore commencé...")
+                self.privmsg(chan, "La pause a pas encore commencé...")
                 return
 
             self.users[user]["pause"] = self.get_pause_time(user)
             this_pause = self.get_current_pause_time(user)
             self.users[user]["last_start"] = None
             if this_pause > 29:
-                serv.privmsg(chan, "Et la règle des 29 minutes ? !!! Tu as passé %s de ton temps en pause !" % self.display_pause(this_pause))
+                self.privmsg(chan, "Et la règle des 29 minutes ? !!! Tu as passé %s de ton temps en pause !" % self.display_pause(this_pause))
                 return
 
-            serv.privmsg(chan, "Fin de la pause :(. Temps passé: %s" % self.display_pause(this_pause))
+            self.privmsg(chan, "Fin de la pause :(. Temps passé: %s" % self.display_pause(this_pause))
             return
 
         if msg.value == "restart":
             self.users[user]["last_start"] = None
             self.users[user]["pause"] = 0
-            serv.privmsg(chan, "Temps de pause redémarré !")
+            self.privmsg(chan, "Temps de pause redémarré !")
             return
 
         if self.get_pause_time(user) < 3600:
-            serv.privmsg(chan, "Temps en pause : %s. Tu peux y aller. ;)" % self.display_pause(self.get_pause_time(user)))
+            self.privmsg(chan, "Temps en pause : %s. Tu peux y aller. ;)" % self.display_pause(self.get_pause_time(user)))
             return
 
-        serv.privmsg(chan, "Temps en pause : %s. Va falloir arrêter les pauses là ! :p" % self.display_pause(self.get_pause_time(user)))
+        self.privmsg(chan, "Temps en pause : %s. Va falloir arrêter les pauses là ! :p" % self.display_pause(self.get_pause_time(user)))
 
     def get_current_pause_time(self, user):
         if self.users[user]["last_start"]:

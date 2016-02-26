@@ -1,37 +1,31 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import env, schema
+from taemin import env, schema, plugin
 from quotation_schema import Quotation
 import re
 from peewee import fn
 
-class TaeminQuotation(object):
+class TaeminQuotation(plugin.TaeminPlugin):
     helper = {"quote": "Quote un message. Usage: !quote add|show pseudo indice"}
 
-    def __init__(self, taemin):
-        self.taemin = taemin 
-
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         if msg.key != "quote":
             return
 
         chan = msg.chan.name 
 
-        if env.db.type_ == "mysql":
-            random_func = fn.Rand
-        else:
-            random_func = fn.Random
+        random_func = fn.Rand
 
         if msg.value == "":
             result = Quotation.select().where(Quotation.chan == msg.chan).order_by(random_func()).limit(1)
             for res in result:
-                serv.privmsg(chan, "%s - %s : %s" % (res.id, res.user.name, res.value))
+                self.privmsg(chan, "%s - %s : %s" % (res.id, res.user.name, res.value))
             return
 
         kws = re.search('(\w+)\s+(\w+)\s+(\d+)', msg.value)
         if kws == None:  
-            serv.privmsg(chan, "Utilisation : !quote add/suppress pseudo  indice")
+            self.privmsg(chan, "Utilisation : !quote add/suppress pseudo  indice")
             return
 
         key = kws.group(1)
@@ -41,15 +35,15 @@ class TaeminQuotation(object):
         if key == "add":
             user = self.get_user(quote_user)
             if not user:
-                serv.privmsg(chan, "Cet utilisateur n'existe pas")
+                self.privmsg(chan, "Cet utilisateur n'existe pas")
                 return
 
             quote = self.get_message(user, msg.chan, quote_limit)
             if not quote:
-                serv.privmsg(chan, "Aucune quote ne correspond")
+                self.privmsg(chan, "Aucune quote ne correspond")
                 return
             Quotation.create(user=user, chan=msg.chan, value=quote.message)
-            serv.privmsg(chan, "La quote suivante : %s a bien été ajoutée" % quote.message)
+            self.privmsg(chan, "La quote suivante : %s a bien été ajoutée" % quote.message)
             return
 
         if key == "suppress":
@@ -57,17 +51,18 @@ class TaeminQuotation(object):
                 quote = Quotation.get(Quotation.id == quote_limit)
                 if quote is not None:
                     quote.delete_instance()
-                    serv.privmsg(chan, "La quote numéro %s a bien été supprimé" % quote_limit)
+                    self.privmsg(chan, "La quote numéro %s a bien été supprimé" % quote_limit)
                     return
-            except:
-                serv.privmsg(chan, "Cette quote n'existe pas")
+
+            except schema.Quotation.DoesNotExist:
+                self.privmsg(chan, "Cette quote n'existe pas")
             return
 
         if key == "show":
            
             result = Quotation.select().where((Quotation.value.contains(quote_user)) & (Quotation.chan == msg.chan)).order_by(random_func()).limit(quote_limit)
             for res in result:
-                serv.privmsg(chan, "%s - %s : %s" % (res.id, res.user.name, res.value))
+                self.privmsg(chan, "%s - %s : %s" % (res.id, res.user.name, res.value))
             return
 
     def get_user(self, name):

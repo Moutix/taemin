@@ -1,15 +1,17 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-class TaeminSayNo(object):
+from taemin import plugin
+
+class TaeminSayNo(plugin.TaeminPlugin):
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.non_keyword = self.taemin.conf.get("SayNo", {}).get("non_keyword", [])
         self.non_nick = self.taemin.conf.get("SayNo", {}).get("non_nick", [])
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         if self._say_no(msg.message):
-            serv.privmsg(msg.chan.name, "NON")
+            self.privmsg(msg.chan.name, "NON")
 
     def _say_no(self, message):
         test = False

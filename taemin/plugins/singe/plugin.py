@@ -2,15 +2,16 @@
 # -*- coding: utf8 -*-
 
 from singe import Singe
+from taemin import plugin
 
-class TaeminSinge(object):
+class TaeminSinge(plugin.TaeminPlugin):
     helper = {"singe": "Joue au singe. Usage: !singe lettre"}
 
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.singe = Singe()
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         if msg.key != "singe":
             return
         chan = msg.chan.name
@@ -18,26 +19,26 @@ class TaeminSinge(object):
         if msg.value == "":
             if self.singe.start_word == "":
                 self.singe.play()
-            serv.privmsg(chan, "%s" % self.singe.start_word)
+            self.privmsg(chan, "%s" % self.singe.start_word)
             return
 
         try:
             test = self.singe.add_letter(msg.value)
         except NameError as err:
             test = None
-            serv.privmsg(chan, "Nope: %s" % err.message)
+            self.privmsg(chan, "Nope: %s" % err.message)
 
         if test:
             if self.singe.play():
-                serv.privmsg(chan, "%s" % self.singe.start_word)
+                self.privmsg(chan, "%s" % self.singe.start_word)
                 if not self.singe.next_words():
-                    serv.privmsg(chan, "J'ai gagné !!! \o/")
+                    self.privmsg(chan, "J'ai gagné !!! \o/")
                     self.singe.restart()
             else:
-                serv.privmsg(chan, "J'ai perdu T.T")
+                self.privmsg(chan, "J'ai perdu T.T")
                 self.singe.restart()
 
         elif test is False:
-            serv.privmsg(chan, "T'as perdu. :p Je pensais à ça : %s" % self.singe.word())
+            self.privmsg(chan, "T'as perdu. :p Je pensais à ça : %s" % self.singe.word())
             self.singe.restart()
 

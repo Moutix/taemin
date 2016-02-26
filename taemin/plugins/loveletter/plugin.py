@@ -2,15 +2,16 @@
 # -*- coding: utf8 -*-
 
 from loveletter import LoveLetter
+from taemin import plugin
 
-class TaeminLoveLetter(object):
+class TaeminLoveLetter(plugin.TaeminPlugin):
     helper = {"loveletter": "Joue à loveletter. Usage: !loveletter start|join|restart|play"}
 
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.loveletter = LoveLetter()
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         if msg.key != "loveletter":
             return
 
@@ -20,15 +21,15 @@ class TaeminLoveLetter(object):
 
 
         if value == "":
-            serv.privmsg(chan, "start pour commencer la partie, restart pour la recommencer")
+            self.privmsg(chan, "start pour commencer la partie, restart pour la recommencer")
         elif value == "start":
             try:
                 self.loveletter.start()
             except ValueError as err:
-                serv.privmsg(chan, "%s, join pour rejoindre la partie" % err.message)
+                self.privmsg(chan, "%s, join pour rejoindre la partie" % err.message)
             for player in self.loveletter.turn:
-                serv.privmsg(player.name, "Tes cartes : %s" % player.cards)
-                serv.privmsg(player.name, "Pour jouer dans le chan : !loveletter play carte_à_jouer personne_visée carte_visée")
+                self.privmsg(player.name, "Tes cartes : %s" % player.cards)
+                self.privmsg(player.name, "Pour jouer dans le chan : !loveletter play carte_à_jouer personne_visée carte_visée")
 
         elif value == "restart":
             self.loveletter.restart()
@@ -36,7 +37,7 @@ class TaeminLoveLetter(object):
             try:
                 self.loveletter.add_player(source)
             except NameError as err:
-                serv.privmsg(chan, err.message)
+                self.privmsg(chan, err.message)
         elif value[:4] == "play":
             options = value.split(" ")
             card = ""
@@ -53,18 +54,18 @@ class TaeminLoveLetter(object):
                 except (NameError, ValueError) as err:
                     result = err.message
                 if result[:4] == "PRIV":
-                    serv.privmsg(source, "%s" % result[5:])
+                    self.privmsg(source, "%s" % result[5:])
                 else:
-                    serv.privmsg(chan, result)
+                    self.privmsg(chan, result)
                 for player in self.loveletter.turn:
-                    serv.privmsg(player.name, "Tes cartes : %s" % player.cards)
+                    self.privmsg(player.name, "Tes cartes : %s" % player.cards)
 
                 if self.loveletter.find_winner():
-                    serv.privmsg(chan, "%s a gagné !!!" % self.loveletter.find_winner().name)
+                    self.privmsg(chan, "%s a gagné !!!" % self.loveletter.find_winner().name)
                     self.loveletter.restart()
             else:
-                serv.privmsg(chan, "Utilisation : !loveletter play carte_à_jouer personne_visée carte_visée")
+                self.privmsg(chan, "Utilisation : !loveletter play carte_à_jouer personne_visée carte_visée")
 
         for line in self.loveletter.print_state().split("\n"):
-            serv.privmsg(chan, "%s" % line)
+            self.privmsg(chan, "%s" % line)
 

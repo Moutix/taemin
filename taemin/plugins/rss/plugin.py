@@ -3,11 +3,11 @@
 
 from schema_rss import FeedEntry, Feed
 from feed_thread import FeedThread
-from taemin import schema, env
+from taemin import schema, env, plugin
 
-class TaeminRSS(object):
+class TaeminRSS(plugin.TaeminPlugin):
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.conf = env.conf.get("RSS", {})
         if not self.conf:
             env.log.warning("Your RSS parser is not configure")
@@ -25,7 +25,7 @@ class TaeminRSS(object):
         for feed in self.feeds:
             feed.start()
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         return
         if msg.key != "rss":
             return
@@ -33,7 +33,7 @@ class TaeminRSS(object):
 
         values = msg.value.split(" ", 1)
         if len(values) < 1:
-            serv.privmsg(chan, "Usage: !rss add http//feed-url/")
+            self.privmsg(chan, "Usage: !rss add http//feed-url/")
             return
 
         key = values[0]

@@ -1,15 +1,14 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-class TaeminCafe(object):
+from taemin import plugin
+
+class TaeminCafe(plugin.TaeminPlugin):
     helper = {"all": "Envoie un message à tout le monde",
               "cafe": "Appelle tout le monde pour prendre un café ;)"}
 
 
-    def __init__(self, taemin):
-        self.taemin = taemin
-
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         if msg.key not in ("all", "cafe"):
             return
 
@@ -21,5 +20,5 @@ class TaeminCafe(object):
         else:
             message = "%s %s" % (message, msg.value)
 
-        serv.privmsg(chan, message)
+        self.privmsg(chan, message)
 

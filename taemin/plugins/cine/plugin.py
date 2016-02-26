@@ -5,12 +5,13 @@ import re
 import requests
 import urllib
 import dateutil.parser
-from datetime import date, timedelta
-import shlex
-from optparse import OptionParser
-import itertools
-from bs4 import BeautifulSoup
 import json
+import shlex
+import itertools
+from datetime import date, timedelta
+from optparse import OptionParser
+from bs4 import BeautifulSoup
+from taemin import plugin
 
 class OptionParsingError(RuntimeError):
     def __init__(self, msg):
@@ -137,13 +138,13 @@ class AlloCine(object):
         return "<cine-%s %s>" % (self.id, self.name)
 
 
-class TaeminCine(object):
+class TaeminCine(plugin.TaeminPlugin):
     helper = {"film": "Recherche un film sur allocine. Usage !film nom",
               "seances": "Recherche des séances. Usage !seances film [--lieu=Paris] [--version] [--day=today] [--cine] [--quality] [--page=1]",
               "onscreen": "Affiche les films passant au cinéma en ce moment. Usage !onscreen page"}
 
     def __init__(self, taemin):
-        self.taemin = taemin
+        plugin.TaeminPlugin.__init__(self, taemin)
         self.parser = self._get_opt_parser()
 
     def _get_opt_parser(self):
@@ -157,7 +158,7 @@ class TaeminCine(object):
         parser.add_option("--force", action="store_true", dest="force", default=False)
         return parser
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         if msg.key not in ("seance", "film", "seances", "onscreen"):
             return
 
@@ -170,53 +171,53 @@ class TaeminCine(object):
 
             films = self.get_current_films(page)
 
-            serv.privmsg(chan, "Au cinéma: %s" % ", ".join(films))
+            self.privmsg(chan, "Au cinéma: %s" % ", ".join(films))
             return
 
         if msg.key == "film":
             film = self.get_film(msg.value)
             if not film:
-                serv.privmsg(chan, self.helper["film"])
+                self.privmsg(chan, self.helper["film"])
                 return
 
-            serv.privmsg(chan, "%s - %s (%s): %s" % (film.name, film.year, film.director, film.link))
+            self.privmsg(chan, "%s - %s (%s): %s" % (film.name, film.year, film.director, film.link))
             return
 
         if msg.key in ("seance", "seances"):
             try:
                 values = shlex.split(msg.value)
             except ValueError as msg:
-                serv.privmsg(chan, "Error in your args: %s" %msg)
+                self.privmsg(chan, "Error in your args: %s" %msg)
                 return
 
             try:
                 (options, args) = self.parser.parse_args(values)
             except OptionParsingError, err:
-                serv.privmsg(chan, "Error in your options: %s" % err.msg)
+                self.privmsg(chan, "Error in your options: %s" % err.msg)
                 return
 
             if not options.location or not args:
-                serv.privmsg(chan, self.helper["seances"])
+                self.privmsg(chan, self.helper["seances"])
                 return
 
             film = " ".join(args)
 
             if not AlloSeance.get_day(options.day):
-                serv.privmsg(chan, "Accepted values for day: %s" % "|".join(AlloSeance.WEEK_DAY.keys() + ["today", "tomorrow", "aujourd'hui", "demain"]))
+                self.privmsg(chan, "Accepted values for day: %s" % "|".join(AlloSeance.WEEK_DAY.keys() + ["today", "tomorrow", "aujourd'hui", "demain"]))
                 return
 
             if options.version and options.version not in AlloSeance.MAP_VERSIONS.values():
-                serv.privmsg(chan, "Accepted values for version %s" % "|".join(AlloSeance.MAP_VERSIONS.values()))
+                self.privmsg(chan, "Accepted values for version %s" % "|".join(AlloSeance.MAP_VERSIONS.values()))
                 return
 
             film = self.get_film(film)
             if not film:
-                serv.privmsg(chan, "Connais pas ce film.")
+                self.privmsg(chan, "Connais pas ce film.")
                 return
 
             location = self.get_localization(options.location)
             if not location:
-                serv.privmsg(chan, "Lieu inconnu")
+                self.privmsg(chan, "Lieu inconnu")
                 return
 
             seances = [seance for seance in self.get_seances(film=film,
@@ -227,27 +228,27 @@ class TaeminCine(object):
                                                              cine_id=options.cine,
                                                              page=options.page)]
 
-            serv.privmsg(chan, "Seance pour le film %s (%s) à %s: %s" % (film.name, film.year, location.name, film.link))
+            self.privmsg(chan, "Seance pour le film %s (%s) à %s: %s" % (film.name, film.year, location.name, film.link))
             if not seances:
-                serv.privmsg(chan, "Pas de séance pour ce film avec ces paramètres")
+                self.privmsg(chan, "Pas de séance pour ce film avec ces paramètres")
                 return
 
             if options.cine:
                 cine = seances[0].cine
-                serv.privmsg(chan, "Séances pour le cinéma %s (%s): %s" % (cine.name, cine.address, cine.maps_link))
-                serv.privmsg(chan, AlloSeance.to_str(seances))
+                self.privmsg(chan, "Séances pour le cinéma %s (%s): %s" % (cine.name, cine.address, cine.maps_link))
+                self.privmsg(chan, AlloSeance.to_str(seances))
                 return
 
 
             cines = list(set(seance.cine for seance in seances))
             if len(cines) > 3 and not options.force:
                 for group_cines in [cines[i:i+10] for i in range(0, len(cines), 10)]:
-                    serv.privmsg(chan, ", ".join(["[%s] %s" % (cine.id, cine.name) for cine in group_cines]))
+                    self.privmsg(chan, ", ".join(["[%s] %s" % (cine.id, cine.name) for cine in group_cines]))
                 return
 
             seances.sort(cmp=lambda x, y: cmp(x.cine, y.cine))
             for key, seance in itertools.groupby(seances, lambda x: x.cine):
-                serv.privmsg(chan, "[%s] %s: %s" % (key.id, key.name, AlloSeance.to_str(seance)))
+                self.privmsg(chan, "[%s] %s: %s" % (key.id, key.name, AlloSeance.to_str(seance)))
 
     def get_current_films(self, page=1):
         try:

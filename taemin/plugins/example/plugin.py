@@ -1,19 +1,23 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-class TaeminExample(object):
-    def __init__(self, taemin):
-        self.taemin = taemin
+from taemin import plugin
 
-    def on_join(self, serv, connection):
+class TaeminExample(plugin.TaeminPlugin):
+    helper = {}
+
+    def on_join(self, connection):
         pass
 
-    def on_pubmsg(self, serv, msg):
+    def on_pubmsg(self, msg):
         pass
 
-    def on_privmsg(self, serv, msg):
+    def on_privmsg(self, msg):
         pass
 
-    def on_quit(self, serv, connection):
+    def on_quit(self, user):
+        pass
+
+    def on_part(self, connection):
         pass
 
