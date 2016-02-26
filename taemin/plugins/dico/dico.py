@@ -3,10 +3,11 @@
 
 from bs4 import BeautifulSoup
 import requests
+import logging
 import urllib
 
 class Dico(object):
-    URL = "http://www.larousse.fr/dictionnaires/francais"
+    URL = "http://www.larousse.fr/dictionnaires/rechercher"
     def __init__(self, word):
         self.word = word
         self._html = self._get_html()
@@ -18,7 +19,7 @@ class Dico(object):
 
     def _get_html(self):
         try:
-            res = requests.get("%s/%s" % (self.URL, urllib.quote(self.word))).text
+            res = requests.get("%s?q=%s&l=francais&culture=" % (self.URL, urllib.quote(self.word))).text
         except requests.RequestException:
             return None
 
@@ -37,7 +38,7 @@ class Dico(object):
         return definition.getText().encode("utf-8")
 
 def main():
-    dico = Dico("moustache")
+    dico = Dico("mémé")
     print dico.suggestions
     print dico.definition
     print dico.descriptions
