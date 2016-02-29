@@ -286,6 +286,9 @@ class TaeminCine(plugin.TaeminPlugin):
         for film in raw_result:
             director = None
             year = None
+            if film.get("ad"):
+                continue
+
             for meta in film.get("metadata", []):
                 if meta.get("property") == "director":
                     director = meta.get("value", "").encode("utf-8")
@@ -384,11 +387,11 @@ class TaeminCine(plugin.TaeminPlugin):
 def main():
     cine = TaeminCine(None)
 
-    print cine.get_films("")
+    print cine.get_films("deadpool")
     print cine.get_localizations("antony")
 
-#    for seance in cine.get_seances("start", "antony", "VO", day="today", cine_id=364):
-#        print seance
+    for seance in cine.get_seances("start", "antony", "VO", day="today", cine_id=364):
+        print seance
 
     print cine.get_current_films()
 
