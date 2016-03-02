@@ -33,6 +33,7 @@ plugins:
   plugins.cine.plugin: "TaeminCine"
   plugins.pause.plugin: "TaeminPause"
   plugins.dico.plugin: "TaeminDico"
+  plugins.synonymes.plugin: "TaeminSynonymes"
 
 ImageSearch:
   taemin:
