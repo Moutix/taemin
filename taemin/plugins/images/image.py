@@ -67,6 +67,8 @@ class ImageSearch(object):
         return images
 
     def _get_image(self):
+        if not self.images:
+            return "Aucun résultat"
         return random.choice(self.images)
 
     def _url_to_tiny(self):
