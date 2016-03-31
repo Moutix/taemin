@@ -5,6 +5,7 @@ import irclib
 import ircbot
 import re
 import datetime
+import courriel
 
 from taemin import env, schema, conf
 
@@ -17,6 +18,7 @@ class Taemin(ircbot.SingleServerIRCBot):
         self.desc = general_conf.get("desc", "Le Splendide")
         self.server = general_conf.get("server", "")
         self.port = general_conf.get("port", 6667)
+        self.mailation = courriel.Mailage(self)
         ircbot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
 
         self.plugins = self._get_plugins()
