@@ -96,10 +96,12 @@ class Taemin(ircbot.SingleServerIRCBot):
         for plugin in self.plugins:
             plugin.on_quit(user)
 
-    def _get_plugins(self):
+    def _get_plugins(self, force_reload=False):
         plugins = []
         for path, plugin_class in self.conf.get("plugins", {}).iteritems():
             module = __import__("taemin.%s" % path, fromlist=[plugin_class])
+            if force_reload:
+                reload(module)
             plugin = getattr(module, plugin_class)
             plugins.append(plugin(self))
             self.log.info("Load plugin: %s" % plugin_class)
@@ -205,7 +207,7 @@ class Taemin(ircbot.SingleServerIRCBot):
     def reload_conf(self):
         self.log.info("Reload configuration")
         self.conf = conf.TaeminConf().config
-        self.plugins = self._get_plugins()
+        self.plugins = self._get_plugins(True)
         self.log.info("Reload configuration done")
 
     def get_nickname(self, nick):
