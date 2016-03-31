@@ -1,5 +1,8 @@
+#!/usr/bin/env python2
+# -*- coding: utf8 -*-
+
 from peewee import *
-import datetime
+from taemin import conf
 from playhouse.shortcuts import RetryOperationalError
 
 class MySQLDB(RetryOperationalError, MySQLDatabase):
@@ -24,20 +27,37 @@ class DataBase(object):
         else:
             self.random_func = fn.Random
 
-    def init_db(self):
-        if self.type_ == "sqlite":
-            db = SqliteDatabase(self.name)
-        elif self.type_ == "pgsql":
-            db = PostgresqlDatabase(self.name, user=self.user, password=self.password, host=self.host)
-        elif self.type_ == "mysql":
-            db = MySQLDB(self.name, user=self.user, passwd=self.password, host=self.host, port=self.port)
-        else:
-            db = SqliteDatabase(":memory:")
-        return db
+    @classmethod
+    def new_from_conf(cls):
+        db_conf = conf.TaeminConf().config.get("database", {})
+        return cls(db_conf.get("type", "mysql"),
+                   name=db_conf.get("name", "/etc/taemin/taemin.db"),
+                   user=db_conf.get("user", ""),
+                   password=db_conf.get("password", ""),
+                   host=db_conf.get("host", "localhost"))
 
+    def init_db(self):
+        available_db = {
+            "sqlite": self._sqlite_db,
+            "pgsql": self._postgre_db,
+            "mysql": self._mysql_db
+        }
+        return available_db.get(self.type_, self._default_db)()
+
+    def _sqlite_db(self):
+        return SqliteDatabase(self.name)
+
+    def _postgre_db(self):
+        return PostgresqlDatabase(self.name, user=self.user, password=self.password, host=self.host)
+
+    def _mysql_db(self):
+        return MySQLDB(self.name, user=self.user, passwd=self.password, host=self.host, port=self.port)
+
+    def _default_db(self):
+        return SqliteDatabase(":memory")
+
+db = DataBase.new_from_conf()
 
 if __name__ == "__main__":
     database = DataBase("sqlite", "test.db")
     print database.db
-
-

@@ -1,12 +1,9 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import env, schema, plugin, courriel
+from taemin import schema, plugin
 from save_schema import Savedthings
 import re
-from peewee import fn
-import requests
-import mimetypes
 
 class TaeminSave(plugin.TaeminPlugin):
     helper = {"save": "Sauvegarde du contenu. Usage: !save lien/texte or !save quote user number or !save send"}

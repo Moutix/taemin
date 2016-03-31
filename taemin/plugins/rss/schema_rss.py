@@ -1,11 +1,11 @@
 #!/usr/bin/env python2
 #-*- coding: utf8 -*-
 
-from taemin import env, schema
+from taemin import database, schema
 from peewee import *
 import datetime
 
-class Feed(env.db.basemodel):
+class Feed(database.db.basemodel):
     name = TextField()
     url = TextField()
     regex = TextField(null=True)
@@ -13,7 +13,7 @@ class Feed(env.db.basemodel):
     chan = ForeignKeyField(schema.Chan, related_name='feed', null=True)
     created_at = DateTimeField(default=datetime.datetime.now)
 
-class FeedEntry(env.db.basemodel):
+class FeedEntry(database.db.basemodel):
     chan = ForeignKeyField(schema.Chan, related_name='feed_entries')
     feed = ForeignKeyField(Feed, related_name='entries')
     title = TextField()

@@ -3,14 +3,14 @@
 
 from schema_rss import FeedEntry, Feed
 from feed_thread import FeedThread
-from taemin import schema, env, plugin
+from taemin import schema, plugin
 
 class TaeminRSS(plugin.TaeminPlugin):
     def __init__(self, taemin):
         plugin.TaeminPlugin.__init__(self, taemin)
-        self.conf = env.conf.get("RSS", {})
+        self.conf = taemin.conf.get("RSS", {})
         if not self.conf:
-            env.log.warning("Your RSS parser is not configure")
+            taemin.log.warning("Your RSS parser is not configure")
 
         self.feeds = []
         for rss, params in self.conf.iteritems():
@@ -72,7 +72,7 @@ class TaeminRSS(plugin.TaeminPlugin):
             try:
                 chan = schema.Chan.get(name=chan)
             except schema.Chan.DoesNotExist:
-                env.log.warning("RSS plugin: %s is not a valid chan" % chan)
+                self.taemin.log.warning("RSS plugin: %s is not a valid chan" % chan)
                 continue
 
             entry = self.get_entry(feed, title, link, chan)

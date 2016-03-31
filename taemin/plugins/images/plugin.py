@@ -3,9 +3,8 @@
 
 import re
 from image import ImageSearch
-from taemin import env, schema, plugin
+from taemin import plugin, database
 from schema_image import Image
-from peewee import fn
 
 class TaeminImage(plugin.TaeminPlugin):
     helper = {"donne": "Recherche sur google image",
@@ -16,8 +15,8 @@ class TaeminImage(plugin.TaeminPlugin):
 
     def __init__(self, taemin):
         plugin.TaeminPlugin.__init__(self, taemin)
-        self.confapi = env.conf.get("googleApi", {})
-        self.confimage = env.conf.get("ImageSearch", {})
+        self.confapi = taemin.conf.get("googleApi", {})
+        self.confimage = taemin.conf.get("ImageSearch", {})
         self.image = ImageSearch(self.confapi.get("CX"), self.confapi.get("APIKEY"))
 
     def on_pubmsg(self, msg):
@@ -82,11 +81,19 @@ class TaeminImage(plugin.TaeminPlugin):
                 self.privmsg(source, self.image.tiny)
 
     def store(self, image, chan, name=""):
-        Image.create(chan=chan, name=name, image=image.image, word=image.word, tiny=image.tiny)
+        Image.create(chan=chan,
+                     name=name,
+                     image=image.image,
+                     word=image.word,
+                     tiny=image.tiny)
 
     def search_image(self, name, chan):
         try:
-            return Image.select().where((Image.name.contains(name)) & (Image.chan == chan)).order_by(env.db.random_func()).get()
+            return (Image
+                    .select()
+                    .where((Image.name.contains(name)) & (Image.chan == chan))
+                    .order_by(database.db.random_func())
+                    .get())
         except Image.DoesNotExist:
             return None
 

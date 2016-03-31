@@ -1,6 +1,6 @@
 import smtplib
 
-from taemin import env, schema, conf
+from taemin import schema, conf
 from schema import Mail 
 from email.MIMEText import MIMEText
 from email.MIMEImage import MIMEImage
@@ -72,7 +72,7 @@ class Mailage:
         msg.attach(part1)
         msg.attach(part2)
 
-        mail_conf = env.conf.get("Mail_conf", {})
+        mail_conf = self.bot.conf.get("Mail_conf", {})
         port = mail_conf.get("port",25)
         server = mail_conf.get("server", "localhost")
 
@@ -90,7 +90,7 @@ class Mailage:
     def set_email(self):
         delete = Mail.delete()
         delete.execute()
-        for pseudo, mail in env.conf.get("mails", {}).iteritems():
+        for pseudo, mail in self.bot.conf.get("mails", {}).iteritems():
             user = self.get_user(pseudo)
             Mail.create(user=user, mail=mail)
         return

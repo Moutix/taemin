@@ -1,28 +1,29 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import env
+from taemin import database
 from peewee import *
 from playhouse.fields import ManyToManyField
 import datetime
 
-class Chan(env.db.basemodel):
+
+class Chan(database.db.basemodel):
     name = CharField()
     created_at = DateTimeField(default=datetime.datetime.now)
 
-class User(env.db.basemodel):
+class User(database.db.basemodel):
     name = CharField()
     online = BooleanField(default=True)
     created_at = DateTimeField(default=datetime.datetime.now)
 
-class Connection(env.db.basemodel):
+class Connection(database.db.basemodel):
     user = ForeignKeyField(User, related_name='connections')
     chan = ForeignKeyField(Chan, related_name='connections')
     connected_at = DateTimeField(default=datetime.datetime.now)
     disconnected_at = DateTimeField(default=datetime.datetime.now)
     created_at = DateTimeField(default=datetime.datetime.now)
 
-class Message(env.db.basemodel):
+class Message(database.db.basemodel):
     user = ForeignKeyField(User, related_name='messages')
     message = TextField()
     key = TextField(null=True)
@@ -33,7 +34,7 @@ class Message(env.db.basemodel):
 
     created_at = DateTimeField(default=datetime.datetime.now)
 
-class Mail(env.db.basemodel):
+class Mail(database.db.basemodel):
     user = ForeignKeyField(User, related_name='mail')
     mail = TextField()
     created_at = DateTimeField(default = datetime.datetime.now)

@@ -4,21 +4,27 @@
 import irclib
 import ircbot
 import re
+import database
 import datetime
 import courriel
+import logger
 
-from taemin import env, schema, conf
+from taemin import schema, conf
 
 class Taemin(ircbot.SingleServerIRCBot):
     def __init__(self):
-        self.conf = env.conf
+        self.conf = conf.TaeminConf().config
+
         general_conf = self.conf.get("general", {})
         self.chans = general_conf.get("chans", [])
         self.name = general_conf.get("name", "Taemin")
         self.desc = general_conf.get("desc", "Le Splendide")
         self.server = general_conf.get("server", "")
         self.port = general_conf.get("port", 6667)
+
         self.mailation = courriel.Mailage(self)
+        self.log = logger.Logger()
+
         ircbot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
 
         self.plugins = self._get_plugins()
@@ -92,11 +98,11 @@ class Taemin(ircbot.SingleServerIRCBot):
 
     def _get_plugins(self):
         plugins = []
-        for path, plugin_class in env.conf.get("plugins", {}).iteritems():
+        for path, plugin_class in self.conf.get("plugins", {}).iteritems():
             module = __import__("taemin.%s" % path, fromlist=[plugin_class])
             plugin = getattr(module, plugin_class)
             plugins.append(plugin(self))
-            env.log.info("Load plugin: %s" % plugin_class)
+            self.log.info("Load plugin: %s" % plugin_class)
         return plugins
 
 

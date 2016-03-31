@@ -1,11 +1,11 @@
 #!/usr/bin/env python2
 #-*- coding: utf8 -*-
 
-from taemin import env, schema
+from taemin import database, schema
 from peewee import *
 import datetime
 
-class Quotation(env.db.basemodel):
+class Quotation(database.db.basemodel):
     chan = ForeignKeyField(schema.Chan, related_name='quotes')
     user = ForeignKeyField(schema.User, related_name='quotes')
     value = TextField()

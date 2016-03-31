@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import env
 from threading import Thread
 import time
 import re
@@ -19,7 +18,7 @@ class FeedThread(Thread):
     def get_feeds(self):
         feeds = feedparser.parse(self.rss)
         if feeds.get("bozo_exception"):
-            env.log.warning(feeds["bozo_exception"])
+            pass
         else:
             self.name = feeds.feed.get("title", self.name)
 

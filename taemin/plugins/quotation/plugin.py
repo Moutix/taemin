@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import env, schema, plugin
+from taemin import schema, plugin
 from quotation_schema import Quotation
 import re
 from peewee import fn
