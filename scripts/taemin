@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+import signal
 from taemin import bot
 
-if __name__ == "__main__":
-    bot.Taemin().start()
+def reload_conf(signum, frame):
+    bot.reload_conf()
 
+if __name__ == "__main__":
+    signal.signal(signal.SIGHUP, reload_conf)
+    bot = bot.Taemin()
+    bot.start()
 
