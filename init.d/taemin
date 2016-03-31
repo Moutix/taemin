@@ -39,23 +39,32 @@ do_stop () {
     log_end_msg $?
 }
 
+do_reload() {
+    log_daemon_msg "Reload system $DAEMON_NAME daemon"
+    start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE
+    log_end_msg $?
+}
+
 case "$1" in
 
     start|stop)
         do_${1}
         ;;
 
-    restart|reload|force-reload)
+    restart|force-reload)
         do_stop
         do_start
         ;;
+
+    reload)
+        do_reload;;
 
     status)
         status_of_proc "$DAEMON_NAME" "$DAEMON" && exit 0 || exit $?
         ;;
 
     *)
-        echo "Usage: /etc/init.d/$DAEMON_NAME {start|stop|restart|status}"
+        echo "Usage: /etc/init.d/$DAEMON_NAME {start|stop|restart|reload|status}"
         exit 1
         ;;
 
