@@ -51,16 +51,16 @@ class Mailage:
         try:
             r = requests.get(location)
         except requests.exceptions.RequestException:
-            self.htmlmsg += """<p><a href ='""" + location + """'\> </p>"""
+            self.htmlmsg += """<p><a href ='""" + location + """'/> </p>"""
             self.plainText += location
  
             return "<lien>%s" % location
 
         if r.headers["content-type"] and r.headers["content-type"].split("/")[0] == "image":
-            self.htmlmsg += """<p><img src = '""" + r.url +"""'> </p>"""
+            self.htmlmsg += """<p><img src = '""" + r.url +"""'/> </p>"""
             self.plainText += r.url
       
-        self.htmlmsg += """<p><a href ='""" + r.url+ """'\> </p>"""
+        self.htmlmsg += """<p><a href ='""" + r.url+ """"/> </p>"""
         self.plainText += r.url
 
 
