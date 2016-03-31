@@ -203,8 +203,10 @@ class Taemin(ircbot.SingleServerIRCBot):
         return key, value
 
     def reload_conf(self):
+        self.log.info("Reload configuration")
         self.conf = conf.TaeminConf().config
         self.plugins = self._get_plugins()
+        self.log.info("Reload configuration done")
 
     def get_nickname(self, nick):
         if nick[0] in ("~", "&", "@", "%"):
