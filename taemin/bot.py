@@ -16,7 +16,9 @@ class Taemin(ircbot.SingleServerIRCBot):
         self.conf = conf.TaeminConf().config
 
         general_conf = self.conf.get("general", {})
-        self.chans = general_conf.get("chans", [])
+        self.chans = general_conf.get("chans")
+        if not self.chans:
+            self.chans = []
         self.name = general_conf.get("name", "Taemin")
         self.desc = general_conf.get("desc", "Le Splendide")
         self.server = general_conf.get("server", "")
@@ -47,7 +49,13 @@ class Taemin(ircbot.SingleServerIRCBot):
         connection = self.connect_user(source, chan)
 
         for plugin in self.plugins:
-            plugin.on_join(connection)
+            try:
+                plugin.on_join(connection)
+            except Exception as e:
+                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
+                        type(plugin).__name__, plugin.__module__, e)
+
+                self.plugins.remove(plugin)
 
     def on_pubmsg(self, serv, ev):
         source = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -68,7 +76,13 @@ class Taemin(ircbot.SingleServerIRCBot):
                 serv.privmsg(target, "Usage: !help %s" % "|".join(helper.keys()))
 
         for plugin in self.plugins:
-            plugin.on_pubmsg(msg)
+            try:
+                plugin.on_pubmsg(msg)
+            except Exception as e:
+                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
+                        type(plugin).__name__, plugin.__module__, e)
+
+                self.plugins.remove(plugin)
 
     def on_privmsg(self, serv, ev):
         source = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -78,7 +92,13 @@ class Taemin(ircbot.SingleServerIRCBot):
         msg = self.create_priv_message(source, target, message)
 
         for plugin in self.plugins:
-            plugin.on_privmsg(msg)
+            try:
+                plugin.on_privmsg(msg)
+            except Exception as e:
+                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
+                        type(plugin).__name__, plugin.__module__, e)
+
+                self.plugins.remove(plugin)
 
     def on_part(self, serv, ev):
         name = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -86,25 +106,42 @@ class Taemin(ircbot.SingleServerIRCBot):
 
         connection = self.disconnect_user_from_chan(name, chan)
 
+
         for plugin in self.plugins:
-            plugin.on_part(connection)
+            try:
+                plugin.on_part(connection)
+            except Exception as e:
+                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
+                        type(plugin).__name__, plugin.__module__, e)
+
+                self.plugins.remove(plugin)
 
     def on_quit(self, serv, ev):
         name = self.get_nickname(irclib.nm_to_n(ev.source()))
         user = self.disconnect_user(name)
 
         for plugin in self.plugins:
-            plugin.on_quit(user)
+            try:
+                plugin.on_quit(user)
+            except Exception as e:
+                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
+                        type(plugin).__name__, plugin.__module__, e)
+
+                self.plugins.remove(plugin)
 
     def _get_plugins(self, force_reload=False):
         plugins = []
         for path, plugin_class in self.conf.get("plugins", {}).iteritems():
-            module = __import__("taemin.%s" % path, fromlist=[plugin_class])
-            if force_reload:
-                reload(module)
-            plugin = getattr(module, plugin_class)
-            plugins.append(plugin(self))
-            self.log.info("Load plugin: %s" % plugin_class)
+            try:
+                module = __import__("taemin.%s" % path, fromlist=[plugin_class])
+                if force_reload:
+                    reload(module)
+                plugin = getattr(module, plugin_class)
+                plugins.append(plugin(self))
+                self.log.info("Load plugin: %s" % plugin_class)
+            except Exception as e:
+                self.log.exception("Plugin loading failed: %s\n%s, %s", plugin_class, module, e)
+
         return plugins
 
 
@@ -207,8 +244,24 @@ class Taemin(ircbot.SingleServerIRCBot):
     def reload_conf(self):
         self.log.info("Reload configuration")
         self.conf = conf.TaeminConf().config
+        self.reload_chans()
         self.plugins = self._get_plugins(True)
         self.log.info("Reload configuration done")
+
+    def reload_chans(self):
+        new_chans = self.conf.get("general", {}).get("chans")
+        if not new_chans:
+            new_chans = []
+
+        for chan in new_chans:
+            if chan not in self.chans:
+                self.connection.join(chan)
+                self.user_init[chan] = False
+
+        for chan in self.chans:
+            if chan not in new_chans:
+                self.connection.part([chan], "Bye :*")
+        self.chans = new_chans
 
     def get_nickname(self, nick):
         if nick[0] in ("~", "&", "@", "%"):
