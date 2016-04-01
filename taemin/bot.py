@@ -165,6 +165,13 @@ class Taemin(ircbot.SingleServerIRCBot):
             user = schema.User.create(name=name)
         return user
 
+    def get_user(self, name):
+        try:
+            user = schema.User.get(schema.User.name % name)
+        except schema.User.DoesNotExist:
+            return None
+        return user
+
     def find_connection(self, name, chan):
         chan = self.find_chan(chan)
         user = self.find_user(name)
