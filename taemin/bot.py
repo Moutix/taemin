@@ -48,14 +48,7 @@ class Taemin(ircbot.SingleServerIRCBot):
         chan = ev.target()
         connection = self.connect_user(source, chan)
 
-        for plugin in self.plugins:
-            try:
-                plugin.on_join(connection)
-            except Exception as e:
-                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
-                        type(plugin).__name__, plugin.__module__, e)
-
-                self.plugins.remove(plugin)
+        self.safe_load_plugin("on_join", connection)
 
     def on_pubmsg(self, serv, ev):
         source = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -68,21 +61,14 @@ class Taemin(ircbot.SingleServerIRCBot):
 
         if msg.key == "help":
             helper = {}
-            for plugin in self.plugins:
-                helper.update(plugin.helper)
+            for app in self.plugins:
+                helper.update(app.helper)
             if msg.value in helper:
                 serv.privmsg(target, helper[msg.value])
             else:
                 serv.privmsg(target, "Usage: !help %s" % "|".join(helper.keys()))
 
-        for plugin in self.plugins:
-            try:
-                plugin.on_pubmsg(msg)
-            except Exception as e:
-                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
-                        type(plugin).__name__, plugin.__module__, e)
-
-                self.plugins.remove(plugin)
+        self.safe_load_plugin("on_pubmsg", msg)
 
     def on_privmsg(self, serv, ev):
         source = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -91,14 +77,7 @@ class Taemin(ircbot.SingleServerIRCBot):
 
         msg = self.create_priv_message(source, target, message)
 
-        for plugin in self.plugins:
-            try:
-                plugin.on_privmsg(msg)
-            except Exception as e:
-                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
-                        type(plugin).__name__, plugin.__module__, e)
-
-                self.plugins.remove(plugin)
+        self.safe_load_plugin("on_privmsg", msg)
 
     def on_part(self, serv, ev):
         name = self.get_nickname(irclib.nm_to_n(ev.source()))
@@ -106,28 +85,13 @@ class Taemin(ircbot.SingleServerIRCBot):
 
         connection = self.disconnect_user_from_chan(name, chan)
 
-
-        for plugin in self.plugins:
-            try:
-                plugin.on_part(connection)
-            except Exception as e:
-                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
-                        type(plugin).__name__, plugin.__module__, e)
-
-                self.plugins.remove(plugin)
+        self.safe_load_plugin("on_part", connection)
 
     def on_quit(self, serv, ev):
         name = self.get_nickname(irclib.nm_to_n(ev.source()))
         user = self.disconnect_user(name)
 
-        for plugin in self.plugins:
-            try:
-                plugin.on_quit(user)
-            except Exception as e:
-                self.log.exception("Taemin Plugin Error, plugin %s disabled\n%s, %s",
-                        type(plugin).__name__, plugin.__module__, e)
-
-                self.plugins.remove(plugin)
+        self.safe_load_plugin("on_quit", user)
 
     def _get_plugins(self, force_reload=False):
         plugins = []
@@ -136,8 +100,8 @@ class Taemin(ircbot.SingleServerIRCBot):
                 module = __import__("taemin.%s" % path, fromlist=[plugin_class])
                 if force_reload:
                     reload(module)
-                plugin = getattr(module, plugin_class)
-                plugins.append(plugin(self))
+                app = getattr(module, plugin_class)
+                plugins.append(app(self))
                 self.log.info("Load plugin: %s" % plugin_class)
             except Exception as e:
                 self.log.exception("Plugin loading failed: %s\n%s, %s", plugin_class, module, e)
@@ -267,6 +231,14 @@ class Taemin(ircbot.SingleServerIRCBot):
         if nick[0] in ("~", "&", "@", "%"):
             return nick[1:]
         return nick
+
+    def safe_load_plugin(self, event, *opt):
+        for app in self.plugins:
+            try:
+                getattr(app, event)(*opt)
+            except Exception as e:
+                self.log.exception("Message %s %s %s",
+                                   type(app).__name__, app.__module__, e)
 
 def main():
     name = "Ningirsu"
