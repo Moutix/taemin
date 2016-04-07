@@ -1,17 +1,16 @@
 import smtplib
 
 from taemin import schema, conf
-from schema import Mail 
+from schema import Mail
 from email.MIMEText import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
+from bs4 import  BeautifulSoup
 import email, re, requests
 
 class Mailage:
     def __init__(self, bot):
         self.bot = bot
-        self.hmtlmsg = """"""
-        self.plainText = ""
         self.set_email()
 
     def mailage(self, chan, content, user):
@@ -22,21 +21,13 @@ class Mailage:
 
         msg = MIMEMultipart('alternative')
         self.plainText = "Bonjour, \n Ceci est un mail du plus bot du monde : Taemin\n"
-        self.htmlmsg = """\
-                <html>
-                    <head></head>
-                    <body>
-                        <div><p>Bonjour ! <br>
-                        Ceci est un mail du plus bot du monde : Taemin.<br>
-                        </p></div>
-                """
+        self.htmlmsg = "\<html><head></head><body><div><p>Bonjour ! <br> Ceci est un mail du plus bot du monde : Taemin.<br></p></div>"
 
         msg['Subject'] = "Sauvegarde IRC"
         msg['From'] = "taemin@lee.ko"
         self.parsage(content, msg)
 
-        self.htmlmsg += """</body> 
-                    </html>"""
+        self.htmlmsg += "</body></html>"
         self.sendage(email, msg)
 
     def parsage(self, content, msg):
@@ -44,23 +35,23 @@ class Mailage:
             if line.startswith("http"):
                 self.guesstype(line)
                 continue
-            self.htmlmsg += """<p>"""+ line + """</p>"""
+            self.htmlmsg += "<p> {filler} </p>".format(filler= line)
             self.plainText += line
 
     def guesstype(self, location):
         try:
             r = requests.get(location)
         except requests.exceptions.RequestException:
-            self.htmlmsg += """<p><a href ='""" + location + """'/> </p>"""
+            self.htmlmsg += "<p><a href ='{link}'>{link}</a> </p>".format(link = location)
             self.plainText += location
- 
+
             return "<lien>%s" % location
 
         if r.headers["content-type"] and r.headers["content-type"].split("/")[0] == "image":
-            self.htmlmsg += """<p><img src = '""" + r.url +"""'/> </p>"""
+            self.htmlmsg += "<p><img src = '{url}'> </p>".format(url = r.url)
             self.plainText += r.url
-      
-        self.htmlmsg += """<p><a href ='""" + r.url+ """"/> </p>"""
+
+        self.htmlmsg += "<p><a href ='{url}'>{name}</a> </p>".format(url = r.url, name = BeautifulSoup(r.url, 'html.parser'))
         self.plainText += r.url
 
 
@@ -99,5 +90,4 @@ class Mailage:
         try:
             return schema.User.get(schema.User.name % name)
         except schema.User.DoesNotExist:
-            #Il faudrait que je loggue un truc la quand meme...
-            return None
+            self.bot.log("error", "The user that called this function(mail) does not exist in the user database")

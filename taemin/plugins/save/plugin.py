@@ -23,7 +23,7 @@ class TaeminSave(plugin.TaeminPlugin):
             self.saveothers(msg, chan)
             return
 
-        quoteduser = self.get_user(kws.group(1))
+        quoteduser = self.get_user(kws.group(1), chan)
         quotedmsg = self.get_message(quoteduser,msg.chan, int(kws.group(2)))
 
         Savedthings.create(user = msg.user, content = quotedmsg.message)
@@ -37,7 +37,7 @@ class TaeminSave(plugin.TaeminPlugin):
             self.taemin.mailation.mailage(msg.chan.name, tablesauvegarde, msg.user)
             suppr = Savedthings.delete().where(Savedthings.user == msg.user)
             suppr.execute()
- 
+
         else:
             self.savecontent(msg)
 
@@ -49,18 +49,23 @@ class TaeminSave(plugin.TaeminPlugin):
         for line in sauvegarde:
             tableau.append(line.content)
         return tableau
-    
-   
+
+
     def get_message(self, user, chan, limit=1):
-        quotes = [quote for quote in schema.Message.select().where((schema.Message.user == user) & (schema.Message.chan == chan)).order_by(schema.Message.created_at.desc()).offset(limit - 1).limit(1)]
+        quotes = [quote for quote in schema.Message
+                .select()
+                .where((schema.Message.user == user) & (schema.Message.chan == chan))
+                .order_by(schema.Message.created_at.desc())
+                .offset(limit - 1).limit(1)]
+
         if not quotes:
             return None
         else:
             return quotes[0]
 
-    def get_user(self, name):
+    def get_user(self, name, chan):
         try:
             return schema.User.get(schema.User.name % name)
         except schema.User.DoesNotExist:
-            #Il faudrait que je loggue un truc la quand meme...
+            self.privmsg(chan, "L'utilisateur n'est pas enregistré")
             return None
