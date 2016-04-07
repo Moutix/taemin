@@ -5,7 +5,6 @@ from schema import Mail
 from email.MIMEText import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
-from bs4 import  BeautifulSoup
 import email, re, requests
 
 class Mailage:
@@ -21,7 +20,7 @@ class Mailage:
 
         msg = MIMEMultipart('alternative')
         self.plainText = "Bonjour, \n Ceci est un mail du plus bot du monde : Taemin\n"
-        self.htmlmsg = "\<html><head></head><body><div><p>Bonjour ! <br> Ceci est un mail du plus bot du monde : Taemin.<br></p></div>"
+        self.htmlmsg = "<html><head></head><body><div><p>Bonjour ! <br> Ceci est un mail du plus bot du monde : Taemin.<br></p></div>"
 
         msg['Subject'] = "Sauvegarde IRC"
         msg['From'] = "taemin@lee.ko"
@@ -51,7 +50,7 @@ class Mailage:
             self.htmlmsg += "<p><img src = '{url}'> </p>".format(url = r.url)
             self.plainText += r.url
 
-        self.htmlmsg += "<p><a href ='{url}'>{name}</a> </p>".format(url = r.url, name = BeautifulSoup(r.url, 'html.parser'))
+        self.htmlmsg += "<p><a href ='{url}'>{url}</a> </p>".format(url = r.url)
         self.plainText += r.url
 
 
