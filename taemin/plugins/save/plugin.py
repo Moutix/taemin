@@ -31,15 +31,20 @@ class TaeminSave(plugin.TaeminPlugin):
         self.privmsg(chan, "Le contenu a bien été sauvegardé")
 
     def saveothers(self, msg, chan):
-        if msg.value == "send":
+        subj = re.search('send\s*(.+)?', msg.value)
+        if subj == None:
+            self.savecontent(msg)
+        else:
             sauvegarde = Savedthings.select().where(Savedthings.user == msg.user)
             tablesauvegarde = self.parsecontent(sauvegarde)
-            self.taemin.mailation.mailage(msg.chan.name, tablesauvegarde, msg.user)
+            if subj.group(1)== None:
+                self.taemin.mailation.mailage(msg.chan.name, tablesauvegarde, msg.user, "Sauvegarde IRC")
+            else:
+                self.privmsg(chan, subj.group(1))
+                self.taemin.mailation.mailage(msg.chan.name, tablesauvegarde, msg.user, subj.group(1))
             suppr = Savedthings.delete().where(Savedthings.user == msg.user)
             suppr.execute()
 
-        else:
-            self.savecontent(msg)
 
     def savecontent(self, msg):
         Savedthings.create(user = msg.user, content = msg.value)

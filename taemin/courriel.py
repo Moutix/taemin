@@ -12,7 +12,7 @@ class Mailage:
         self.bot = bot
         self.set_email()
 
-    def mailage(self, chan, content, user):
+    def mailage(self, chan, content,user, subject):
         email = self.get_email(user, chan)
         if not email:
             self.bot.connection.privmsg(chan, "L'utilisateur %s n'a pas configuré d'adresse mail" % user.name)
@@ -22,7 +22,7 @@ class Mailage:
         self.plainText = "Bonjour, \n Ceci est un mail du plus bot du monde : Taemin\n"
         self.htmlmsg = "<html><head></head><body><div><p>Bonjour ! <br> Ceci est un mail du plus bot du monde : Taemin.<br></p></div>"
 
-        msg['Subject'] = "Sauvegarde IRC"
+        msg['Subject'] = subject
         msg['From'] = "taemin@lee.ko"
         self.parsage(content, msg)
 
