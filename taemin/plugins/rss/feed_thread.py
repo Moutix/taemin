@@ -47,7 +47,7 @@ class FeedThread(Thread):
 
 def main():
     def callback(feed, title, link):
-        print "%s: %s" % (title, link)
+        print("%s: %s" % (title, link))
 
     rss = "http://www.animefansftw.org/feed/"
     feed = FeedThread(rss, callback)

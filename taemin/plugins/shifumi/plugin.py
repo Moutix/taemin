@@ -70,6 +70,6 @@ class TaeminShifumi(plugin.TaeminPlugin):
         return "Pareil..."
 
 if __name__ == "__main__":
-    print TaeminShifumi(None).play("rock")
-    print TaeminShifumi(None).play("rock")
+    print(TaeminShifumi(None).play("rock"))
+    print(TaeminShifumi(None).play("rock"))
 

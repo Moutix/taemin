@@ -83,7 +83,7 @@ class TaeminNiceBot(plugin.TaeminPlugin):
 def main():
     nice = TaeminNiceBot(None)
     for match in nice.check_generator("test ça : https://www.youtube.com/watch?v=0rtV5esQT6I"):
-        print match
+        print(match)
 
 if __name__ == "__main__":
     main()

@@ -5,6 +5,6 @@ __version__ = "0.0.2"
 
 import sys
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
+#reload(sys)
+#sys.setdefaultencoding("utf-8")
 

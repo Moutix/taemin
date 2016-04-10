@@ -192,7 +192,7 @@ class TaeminCine(plugin.TaeminPlugin):
 
             try:
                 (options, args) = self.parser.parse_args(values)
-            except OptionParsingError, err:
+            except OptionParsingError as err:
                 self.privmsg(chan, "Error in your options: %s" % err.msg)
                 return
 
@@ -387,13 +387,13 @@ class TaeminCine(plugin.TaeminPlugin):
 def main():
     cine = TaeminCine(None)
 
-    print cine.get_films("deadpool")
-    print cine.get_localizations("antony")
+    print(cine.get_films("deadpool"))
+    print(cine.get_localizations("antony"))
 
     for seance in cine.get_seances("start", "antony", "VO", day="today", cine_id=364):
-        print seance
+        print(seance)
 
-    print cine.get_current_films()
+    print(cine.get_current_films())
 
 if __name__ == "__main__":
     main()

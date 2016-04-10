@@ -1,3 +1,6 @@
+#!/usr/bin/env python2
+# -*- coding: utf8 -*-
+
 import smtplib
 
 from taemin import schema, conf

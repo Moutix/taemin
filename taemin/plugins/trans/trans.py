@@ -40,7 +40,7 @@ class Transliterate(object):
         try:
             html = requests.post(url, data={"query": self.word}).text
         except requests.exceptions.RequestException as err:
-            print err
+            print(err)
             return self.word
         soup = BeautifulSoup(html, 'html.parser')
         return soup.select("form font[face=GulimChe]").pop().text.encode("utf-8").strip()
@@ -50,14 +50,14 @@ class Transliterate(object):
         try:
             html = requests.post(url, data={"mode": "hangul", "q": self.word}).text
         except requests.exceptions.RequestException as err:
-            print err
+            print(err)
             return self.word
         soup = BeautifulSoup(html, 'html.parser')
         return "".join([child.attrs.get("title", " ") for child in soup.find_all("span")])
 
 if __name__ == "__main__":
-    print Transliterate("tabe", "jazef").trans
-    print Transliterate("にんじゃ", "romaji").trans
-    print Transliterate("taemin", "hangul").trans
-    print Transliterate(u"태민", "roman").trans
+    print(Transliterate("tabe", "jazef").trans)
+    print(Transliterate("にんじゃ", "romaji").trans)
+    print(Transliterate("taemin", "hangul").trans)
+    print(Transliterate("태민", "roman").trans)
 

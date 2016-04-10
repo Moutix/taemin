@@ -4,7 +4,7 @@
 import errno
 import signal
 import select
-import irclib
+import irc.client
 from taemin import bot
 
 def reload_conf(signum, frame):
@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     while(True):
         try:
-            irclib.SimpleIRCClient.start(bot)
+            irc.client.SimpleIRCClient.start(bot)
         except select.error as (code, msg):
             if code != errno.EINTR:
                 raise

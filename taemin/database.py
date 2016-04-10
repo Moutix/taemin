@@ -60,4 +60,4 @@ db = DataBase.new_from_conf()
 
 if __name__ == "__main__":
     database = DataBase("sqlite", "test.db")
-    print database.db
+    print(database.db)

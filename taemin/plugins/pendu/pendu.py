@@ -98,16 +98,16 @@ class Pendu(object):
 
 if __name__ == "__main__":
     pendu = Pendu("15")
-    print pendu.word
-    print pendu.pretty_print()
+    print(pendu.word)
+    print(pendu.pretty_print())
     pendu.try_letter("A")
-    print pendu.pretty_print()
+    print(pendu.pretty_print())
     pendu.try_letter("E")
-    print pendu.pretty_print()
+    print(pendu.pretty_print())
     pendu.try_letter("I")
-    print pendu.pretty_print()
+    print(pendu.pretty_print())
     pendu.try_letter("O")
-    print pendu.pretty_print()
+    print(pendu.pretty_print())
     pendu.try_letter("U")
-    print pendu.pretty_print()
+    print(pendu.pretty_print())
 

@@ -29,10 +29,10 @@ class Synonymes(object):
         return BeautifulSoup(res, 'html.parser')
 
 def main():
-    print Synonymes.off("test")
-    print Synonymes.off("machin")
-    print Synonymes("mémé").synonymes
-    print Synonymes.off("méazd")
+    print(Synonymes.off("test"))
+    print(Synonymes.off("machin"))
+    print(Synonymes("mémé").synonymes)
+    print(Synonymes.off("méazd"))
 
 if __name__ == "__main__":
     main()

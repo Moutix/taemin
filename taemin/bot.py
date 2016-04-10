@@ -1,17 +1,14 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-import irclib
-import ircbot
+import irc.bot
+import irc.client
 import re
-import database
 import datetime
-import courriel
-import logger
 
-from taemin import schema, conf
+from taemin import schema, conf, courriel, logger
 
-class Taemin(ircbot.SingleServerIRCBot):
+class Taemin(irc.bot.SingleServerIRCBot):
     def __init__(self):
         self.conf = conf.TaeminConf().config
 
@@ -27,7 +24,7 @@ class Taemin(ircbot.SingleServerIRCBot):
         self.mailation = courriel.Mailage(self)
         self.log = logger.Logger()
 
-        ircbot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
+        irc.bot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
 
         self.plugins = self._get_plugins()
         self.user_init = {}
@@ -41,19 +38,19 @@ class Taemin(ircbot.SingleServerIRCBot):
             self.user_init[chan] = False
 
     def on_join(self, serv, ev):
-        source = self.get_nickname(irclib.nm_to_n(ev.source()))
+        source = self.get_nickname(ev.source.nick)
         if source == self.name:
             return
 
-        chan = ev.target()
+        chan = ev.target
         connection = self.connect_user(source, chan)
 
         self.safe_load_plugin("on_join", connection)
 
     def on_pubmsg(self, serv, ev):
-        source = self.get_nickname(irclib.nm_to_n(ev.source()))
-        target = ev.target()
-        message = ev.arguments()[0]
+        source = self.get_nickname(ev.source.nick)
+        target = ev.target
+        message = ev.arguments[0]
         if not self.user_init[target]:
             self.init_users(target)
 
@@ -71,24 +68,24 @@ class Taemin(ircbot.SingleServerIRCBot):
         self.safe_load_plugin("on_pubmsg", msg)
 
     def on_privmsg(self, serv, ev):
-        source = self.get_nickname(irclib.nm_to_n(ev.source()))
-        target = ev.target()
-        message = ev.arguments()[0]
+        source = self.get_nickname(ev.source.nick)
+        target = ev.target
+        message = ev.arguments[0]
 
         msg = self.create_priv_message(source, target, message)
 
         self.safe_load_plugin("on_privmsg", msg)
 
     def on_part(self, serv, ev):
-        name = self.get_nickname(irclib.nm_to_n(ev.source()))
-        chan = ev.target()
+        name = self.get_nickname(ev.source.nick)
+        chan = ev.target
 
         connection = self.disconnect_user_from_chan(name, chan)
 
         self.safe_load_plugin("on_part", connection)
 
     def on_quit(self, serv, ev):
-        name = self.get_nickname(irclib.nm_to_n(ev.source()))
+        name = self.get_nickname(ev.source.nick)
         user = self.disconnect_user(name)
 
         self.safe_load_plugin("on_quit", user)

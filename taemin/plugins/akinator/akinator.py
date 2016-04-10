@@ -55,11 +55,11 @@ class Akinator(object):
 def main():
     akinator = Akinator()
     while akinator.progression < 99:
-        print akinator.question
+        print(akinator.question)
         akinator.answer(1)
 
     akinator.result()
-    print akinator.name, akinator.description
+    print(akinator.name, akinator.description)
 
 if __name__ == "__main__":
     main()

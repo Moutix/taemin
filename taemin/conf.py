@@ -21,7 +21,8 @@ class TaeminConf(object):
 
 
     def add_to_conf(self, conf_file):
-        self.config.update(yaml.load(file(conf_file, 'r')), allow_unicode=True)
+        with open(conf_file, 'r') as stream:
+            self.config.update(yaml.load(stream), allow_unicode=True)
 
     def check_for_conf(self):
         conf_file = []
@@ -31,4 +32,4 @@ class TaeminConf(object):
         return conf_file
 
 if __name__ == "__main__":
-    print TaeminConf().config
+    print(TaeminConf().config)

@@ -67,25 +67,25 @@ class my_install(install):
 
     def init_config(self):
         config = open("taemin/config.py", "w")
-        print >> config, "conf_dir = '%s'" % os.path.abspath((self.conf_prefix))
+        config.write("conf_dir = '%s'" % os.path.abspath((self.conf_prefix)))
         config.close()
 
     def run(self):
-        os.umask(022)
+        os.umask(0o022)
         self.install_conf()
         self.init_config()
         install.run(self)
 
-        os.chmod((self.root or "") + self.conf_prefix, 0755)
+        os.chmod((self.root or "") + self.conf_prefix, 0o755)
 
         if not self.dry_run:
             for filename in self.get_outputs():
                 if filename.find(".yml") != -1:
                     continue
                 mode = os.stat(filename)[stat.ST_MODE]
-                mode |= 044
-                if mode & 0100:
-                    mode |= 011
+                mode |= 0o044
+                if mode & 0o0100:
+                    mode |= 0o011
                 os.chmod(filename, mode)
 
 setup(

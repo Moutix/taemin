@@ -108,7 +108,7 @@ class TaeminImage(plugin.TaeminPlugin):
 
 
 def main():
-    print TaeminImage().image
+    print(TaeminImage().image)
 
 if __name__ == "__name__":
     main()

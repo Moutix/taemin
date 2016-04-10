@@ -53,13 +53,13 @@ class Singe(object):
 if __name__ == "__main__":
     singe = Singe()
     while singe.victory is None:
-        print "taemin joue"
+        print("taemin joue")
         singe.play()
-        print singe.start_word
-        print "A joue"
+        print(singe.start_word)
+        print("A joue")
         singe.add_letter("A")
-        print singe.start_word
+        print(singe.start_word)
 
-    print "victory: " + str(singe.victory)
-    print singe.word()
+    print("victory: " + str(singe.victory))
+    print(singe.word())
 

@@ -39,9 +39,9 @@ class Dico(object):
 
 def main():
     dico = Dico("mémé")
-    print dico.suggestions
-    print dico.definition
-    print dico.descriptions
+    print(dico.suggestions)
+    print(dico.definition)
+    print(dico.descriptions)
 
 if __name__ == "__main__":
     main()

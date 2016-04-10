@@ -32,6 +32,6 @@ class Traduction(object):
 
 if __name__ == "__main__":
     trad = Traduction("Tabe", "ja", "fr")
-    print trad.romaji
-    print trad.trad
+    print(trad.romaji)
+    print(trad.trad)
 
