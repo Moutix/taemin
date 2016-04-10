@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
+from io import open
 import yaml
 import os
 import glob
@@ -21,7 +22,7 @@ class TaeminConf(object):
 
 
     def add_to_conf(self, conf_file):
-        with open(conf_file, 'r') as stream:
+        with open(conf_file, 'r', encoding='utf-8') as stream:
             self.config.update(yaml.load(stream), allow_unicode=True)
 
     def check_for_conf(self):
