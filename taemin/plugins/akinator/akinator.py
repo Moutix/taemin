@@ -8,7 +8,7 @@ class AkinatorError(Exception):
     pass
 
 class Akinator(object):
-    URL = "http://api-fr1.akinator.com/ws/"
+    URL = "http://api-fr2.akinator.com/ws/"
     def __init__(self):
         self.step = 0
         self.question = None
@@ -21,7 +21,8 @@ class Akinator(object):
     def requests(self, path, method="GET", params=None, data=None):
         try:
             return requests.request(method, "%s%s" % (self.URL, path), params=params, data=data).json
-        except:
+        except requests.RequestException as err:
+            print err
             return None
 
     def init_session(self):
