@@ -22,11 +22,13 @@ class Akinator(object):
         try:
             return requests.request(method, "%s%s" % (self.URL, path), params=params, data=data).json
         except requests.RequestException as err:
-            print err
             return None
 
     def init_session(self):
         res = self.requests("new_session", params={"partner": 1})
+        if not res:
+            return None, None
+
         ident = res.get("parameters", {}).get("identification", {})
         self.parse_response(res.get("parameters", {}).get("step_information", {}))
         return ident.get("session"), ident.get("signature")
@@ -43,6 +45,8 @@ class Akinator(object):
     def answer(self, answer):
         params = {"session": self.session, "signature": self.signature, "step": self.step, "answer": answer}
         res = self.requests("answer", params=params)
+        if not res:
+            return None
         self.parse_response(res.get("parameters", {}))
 
     def result(self):
