@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import database
+from taemin import database, conf
 from peewee import *
-from playhouse.fields import ManyToManyField
+from playhouse.fields import ManyToManyField, AESEncryptedField
 import datetime
 
 
@@ -25,7 +25,7 @@ class Connection(database.db.basemodel):
 
 class Message(database.db.basemodel):
     user = ForeignKeyField(User, related_name='messages')
-    message = TextField()
+    message = AESEncryptedField(conf.TaeminConf().config["database"].get("aes_password", "banane"))
     key = TextField(null=True)
     value = TextField(null=True)
     target = TextField(null=True)
