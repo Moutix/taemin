@@ -6,6 +6,13 @@ general:
   chans:
     - "#miku"
 
+mails:
+  pseudo: email@example.fr
+
+Mail_conf:
+  port: 25
+  server: localhost
+
 database:
   # type can be sqlite, mysql or pgsql
   type: sqlite
@@ -13,6 +20,7 @@ database:
   name: taemin.db
   user:
   password:
+  aes_password: "azpofihzefio" #Use for message encryption, don't forget to change
 
 plugins:
   plugins.images.plugin: "TaeminImage"
@@ -34,6 +42,11 @@ plugins:
   plugins.pause.plugin: "TaeminPause"
   plugins.dico.plugin: "TaeminDico"
   plugins.synonymes.plugin: "TaeminSynonymes"
+  plugins.save.plugin: "TaeminSave"
+  plugins.shifumi.plugin: "TaeminShifumi"
+  plugins.todo.plugin: "TaeminTodo"
+  plugins.shareim.plugin: "TaeminShareIm"
+
 
 ImageSearch:
   taemin:
