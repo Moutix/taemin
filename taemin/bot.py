@@ -5,6 +5,7 @@ import irc.bot
 import irc.client
 import re
 import datetime
+import threading
 
 from taemin import schema, conf, courriel, logger
 
@@ -101,7 +102,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
                 plugins.append(app(self))
                 self.log.info("Load plugin: %s" % plugin_class)
             except Exception as e:
-                self.log.exception("Plugin loading failed: %s\n%s, %s", plugin_class, module, e)
+                self.log.exception("Plugin loading failed: %s\n%s", plugin_class, e)
 
         return plugins
 
@@ -239,7 +240,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
     def safe_load_plugin(self, event, *opt):
         for app in self.plugins:
             try:
-                getattr(app, event)(*opt)
+                threading.Thread(target=getattr(app, event), args=opt).start()
             except Exception as e:
                 self.log.exception("Message %s %s %s",
                                    type(app).__name__, app.__module__, e)
