@@ -49,7 +49,7 @@ class TaeminNiceBot(plugin.TaeminPlugin):
         if not title:
             return None
 
-        return title.string.strip().encode("utf-8")
+        return title.string.strip().replace('\n', ' ').encode("utf-8")
 
     def _get_youtube(self, match, text):
         try:
@@ -82,8 +82,14 @@ class TaeminNiceBot(plugin.TaeminPlugin):
 
 def main():
     nice = TaeminNiceBot(None)
-    for match in nice.check_generator("test ça : https://www.youtube.com/watch?v=0rtV5esQT6I"):
-        print(match)
+    urls = [
+        "petit test à faire https://bugs.chromium.org/p/project-zero/issues/detail?id=820",
+        "test ça : https://www.youtube.com/watch?v=0rtV5esQT6I"
+    ]
+
+    for url in urls:
+        for match in nice.check_generator(url):
+            print(match)
 
 if __name__ == "__main__":
     main()

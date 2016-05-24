@@ -277,7 +277,7 @@ class TaeminCine(plugin.TaeminPlugin):
         except requests.RequestException:
             return []
 
-        return [film for film in self.films_generator(res.json)]
+        return [film for film in self.films_generator(res.json())]
 
     def films_generator(self, raw_result):
         if not raw_result:
@@ -313,7 +313,7 @@ class TaeminCine(plugin.TaeminPlugin):
         except requests.RequestException:
             return []
 
-        return [localization for localization in self.localizations_generator(res.json)]
+        return [localization for localization in self.localizations_generator(res.json())]
 
     def localizations_generator(self, raw_result):
         if not raw_result:
@@ -337,7 +337,7 @@ class TaeminCine(plugin.TaeminPlugin):
         except requests.RequestException:
             return
 
-        for seance in self.seances_generator(res.json, film, localization):
+        for seance in self.seances_generator(res.json(), film, localization):
             if version and seance.version != version:
                 continue
 

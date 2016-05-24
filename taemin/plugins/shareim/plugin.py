@@ -31,7 +31,7 @@ class TaeminShareIm(plugin.TaeminPlugin):
                 "delete-day": "0"
                 }
         try:
-            res = requests.post(cls._URL, data=data, verify=False).json
+            res = requests.post(cls._URL, data=data, verify=False).json()
         except requests.RequestException:
             return None
 

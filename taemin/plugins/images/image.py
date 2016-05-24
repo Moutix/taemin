@@ -49,14 +49,14 @@ class ImageSearch(object):
                 "num": rsz,
                 "q": self.word}
         try:
-            request = requests.get(self.URL, params=data)
+            request = requests.get(self.URL, params=data).json()
         except requests.exceptions.RequestException as err:
             raise GoogleError(err)
 
-        if request.json.get("error"):
-            raise GoogleError(request.json["error"].get("message"))
+        if request.get("error"):
+            raise GoogleError(request["error"].get("message"))
 
-        return request.json
+        return request
 
     def _get_images(self):
         images = []
@@ -79,8 +79,12 @@ class ImageSearch(object):
         return tinyurl
 
 def main():
-    image = ImageSearch("", "")
-    image.word = "taemin"
+    APIKEY = "AIzaSyBZc32pq-zq99lybE7IyOl-NEd8aKcWB6I"
+    CX = "007167590149092953870:rztyz-auexq"
+    image = ImageSearch(CX, APIKEY)
+    image.search("taemin")
+    print image.images
+    print image.image
 
 if __name__ == "__main__":
     main()

@@ -7,7 +7,7 @@ import re
 from peewee import fn
 
 class TaeminQuotation(plugin.TaeminPlugin):
-    helper = {"quote": "Quote un message. Usage: !quote add|show pseudo indice"}
+    helper = {"quote": "Quote un message. Usage: !quote add|show|suppress pseudo indice|nombre de quotes à supprimer(-indice supérieur)"}
 
     def on_pubmsg(self, msg):
         if msg.key != "quote":
@@ -23,14 +23,18 @@ class TaeminQuotation(plugin.TaeminPlugin):
                 self.privmsg(chan, "%s - %s : %s" % (res.id, res.user.name, res.value))
             return
 
-        kws = re.search('(\w+)\s+(\w+)\s+(\d+)', msg.value)
-        if kws == None:  
-            self.privmsg(chan, "Utilisation : !quote add/suppress pseudo  indice")
+        kws = re.search(r'(?P<key>\w+)\s+(?P<user>\w+)(?:\s+)?(?P<limit>\d+)?(?:-)?(?P<uplimit>\d+)?', msg.value)
+        if not kws:
+            self.privmsg(chan, "Il est probable que vous ayez employé une mauvaise syntaxe. Un exemple : !quote add Potiron 8-12 ou !quote add Potiron 4")
             return
 
-        key = kws.group(1)
-        quote_user = kws.group(2)
-        quote_limit = int(kws.group(3))
+
+        kws = kws.groupdict()
+        key = kws["key"]
+        quote_user = kws["user"]
+        quote_limit = int(kws["limit"] if kws["limit"] else 1)
+        uplimit = int(kws["uplimit"]) - quote_limit + 1 if (kws["uplimit"] and (int(kws["uplimit"]) > quote_limit)) else 1
+
 
         if key == "add":
             user = self.get_user(quote_user)
@@ -38,12 +42,15 @@ class TaeminQuotation(plugin.TaeminPlugin):
                 self.privmsg(chan, "Cet utilisateur n'existe pas")
                 return
 
-            quote = self.get_message(user, msg.chan, quote_limit)
-            if not quote:
-                self.privmsg(chan, "Aucune quote ne correspond")
+            quotes = self.prout(user, msg.chan, quote_limit, uplimit)
+            if not quotes:
+                self.privmsg(chan, "un probleme est survenu lors de l'enregistrement de la quote : Aucun message à enregistrer")
                 return
-            Quotation.create(user=user, chan=msg.chan, value=quote.message)
-            self.privmsg(chan, "La quote suivante : %s a bien été ajoutée" % quote.message)
+            tosave = ""
+            for quote in quotes:
+                tosave = quote.message + "  " + tosave
+            Quotation.create(user=user, chan=msg.chan, value=tosave)
+            self.privmsg(chan, "La quote suivante : %s a bien été ajoutée" % tosave)
             return
 
         if key == "suppress":
@@ -51,7 +58,7 @@ class TaeminQuotation(plugin.TaeminPlugin):
                 quote = Quotation.get(Quotation.id == quote_limit)
                 if quote is not None:
                     quote.delete_instance()
-                    self.privmsg(chan, "La quote numéro %s a bien été supprimé" % quote_limit)
+                    self.privmsg(chan, "La quote numéro %s a bien été supprimée" % quote_limit)
                     return
 
             except schema.Quotation.DoesNotExist:
@@ -61,8 +68,6 @@ class TaeminQuotation(plugin.TaeminPlugin):
         if key == "show":
            
             result = Quotation.select().where((Quotation.value.contains(quote_user)) & (Quotation.chan == msg.chan)).order_by(random_func()).limit(quote_limit)
-            for res in result:
-                self.privmsg(chan, "%s - %s : %s" % (res.id, res.user.name, res.value))
             return
 
     def get_user(self, name):
@@ -71,10 +76,19 @@ class TaeminQuotation(plugin.TaeminPlugin):
         except schema.User.DoesNotExist:
             return None
 
-    def get_message(self, user, chan, limit=1):
-        quotes = [quote for quote in schema.Message.select().where((schema.Message.user == user) & (schema.Message.chan == chan)).order_by(schema.Message.created_at.desc()).offset(limit - 1).limit(1)]
-        if not quotes:
-            return None
-        else:
-            return quotes[0]
 
+    def prout(self, user, chan, limit, uplimit ):
+        quotes = [quote for quote in (
+            schema
+            .Message
+            .select()
+            .where((schema.Message.user == user) & (schema.Message.chan == chan))
+            .order_by(schema.Message.created_at.desc())
+            .offset(limit - 1)
+            .limit(uplimit))]
+
+        if not quotes:
+            self.privmsg(chan.name, "Aucune quote n'a été trouvée. Valeurs utilisées %s et %s et %s" % (limit, uplimit, user))
+            return None
+
+        return quotes

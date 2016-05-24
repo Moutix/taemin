@@ -20,7 +20,7 @@ class Akinator(object):
 
     def requests(self, path, method="GET", params=None, data=None):
         try:
-            return requests.request(method, "%s%s" % (self.URL, path), params=params, data=data).json
+            return requests.request(method, "%s%s" % (self.URL, path), params=params, data=data).json()
         except requests.RequestException as err:
             return None
 
