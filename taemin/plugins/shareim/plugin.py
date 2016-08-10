@@ -24,6 +24,10 @@ class TaeminShareIm(plugin.TaeminPlugin):
 
     @classmethod
     def upload_image(cls, url):
+        url = cls.realurl(url)
+        if not url:
+            return None
+
         data = {"lutim-file-url": url,
                 "format": "json",
                 "first-view": "0",
@@ -38,6 +42,13 @@ class TaeminShareIm(plugin.TaeminPlugin):
         try:
             return "%s%s" % (cls._URL, res["msg"]["short"])
         except KeyError:
+            return None
+
+    @staticmethod
+    def realurl(url):
+        try:
+            return requests.get(url).url
+        except requests.exceptions.RequestException as err:
             return None
 
 if __name__ == "__main__":
