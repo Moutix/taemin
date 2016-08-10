@@ -7,12 +7,10 @@ from bs4 import BeautifulSoup
 from taemin import plugin
 
 class TaeminNiceBot(plugin.TaeminPlugin):
-
     def __init__(self, taemin):
         plugin.TaeminPlugin.__init__(self, taemin)
         self.mapping = [
             (r"""((?:http[s]?://)?(?:www\.)?youtu(?:be\.com/watch\?v=|\.be/)([\w\-]+)(&(amp;)?[\w\?=]*)?)""", self._get_youtube),
-            (r"""(https?://\S+)""", self._get_title),
         ]
 
     def on_pubmsg(self, msg):
@@ -20,6 +18,12 @@ class TaeminNiceBot(plugin.TaeminPlugin):
 
         for match in self.check_generator(msg.message):
             self.privmsg(chan, match)
+            return
+
+        if not msg.link:
+            return
+
+        self.privmsg(chan, msg.link.title)
 
     def check_generator(self, text):
         for regex, func in self.mapping:
@@ -27,33 +31,13 @@ class TaeminNiceBot(plugin.TaeminPlugin):
             if not match:
                 continue
 
-            res = func(match, text)
+            res = func(match.group(1), text)
             if res:
                 yield res
-                break
 
-    def _get_title(self, match, text):
+    def _get_youtube(self, link, text):
         try:
-            html = requests.get(match.group(1))
-        except requests.RequestException:
-            return None
-
-        try:
-            html = html.text
-        except TypeError:
-            return None
-
-        html = BeautifulSoup(html, 'html.parser')
-
-        title = html.find("title")
-        if not title:
-            return None
-
-        return title.string.strip().replace('\n', ' ').encode("utf-8")
-
-    def _get_youtube(self, match, text):
-        try:
-            html = requests.get(match.group(1)).text
+            html = requests.get(link).text
         except requests.RequestException:
             return None
 

@@ -182,12 +182,20 @@ class Taemin(irc.bot.SingleServerIRCBot):
         chan = self.find_chan(target)
         user = self.find_user(source)
 
-        mesg = schema.Message.create(user=user, message=message, key=key, value=value, chan=chan)
+        mesg = schema.Message.create(
+            user=user,
+            message=message,
+            key=key,
+            value=value,
+            chan=chan,
+            link=schema.Link.new_from_url(self.find_link(message))
+        )
 
         hl = []
         for user in self.list_users(chan, online=None):
             if re.compile("^.*" + user.name.lower() + ".*$").match(message.lower()):
                 hl.append(user)
+
         mesg.highlights.add(hl)
 
         return mesg
@@ -198,6 +206,18 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
         mesg = schema.Message.create(user=user, message=message, key=key, value=value, target=target)
         return mesg
+
+    @staticmethod
+    def find_link(message):
+        m = re.search(r"""(https?://\S+)""", message)
+        if not m:
+            return None
+
+        link = m.group(1)
+        if link[-1] == ")" and "(" in message:
+            link = link[:-1]
+
+        return link
 
     def parse_message(self, message):
         m = re.search("^!(\S+)\s*(.*)$", message)
