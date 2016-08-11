@@ -3,10 +3,11 @@
 
 import datetime
 import requests
+import re
 
 from playhouse.fields import ManyToManyField, AESEncryptedField
 from peewee import *
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 
 from taemin import database, conf
 
@@ -32,22 +33,56 @@ class Link(database.db.basemodel):
         if not url:
             return None
 
-        try:
-            html = requests.get(url)
-        except requests.RequestException:
+        true_url, title, content_type = cls.info_from_url(url)
+
+        if not true_url:
             return None
 
         try:
-            return cls.get(cls.url == html.url)
+            return cls.get(cls.url == true_url)
         except cls.DoesNotExist:
             pass
 
+        return cls.create(url=true_url, title=title, type=content_type)
+
+    @classmethod
+    def info_from_url(cls, url):
+        """
+            Get true url, title and content_type form an url
+
+            :param str url: The URL to requests
+
+            :Example:
+            >>> Link.info_from_url("https://google.com")
+            (u'https://www.google.fr/', 'Google', 'text/html')
+        """
+
         try:
-            title = cls._get_title(html.text)
-        except TypeError:
+            res = requests.get(url, stream=True, timeout=5)
+        except requests.RequestException:
+            return None, None, None
+
+        content_type = res.headers["content-type"].split(";")[0] if res.headers["content-type"] else None
+
+        if content_type == "text/html":
+            title = cls.get_title(cls.get_head_dom(res))
+        else:
             title = None
 
-        return cls.create(url=html.url, title=title, type=html.headers["content-type"])
+        res.close()
+
+        return res.url, title, content_type
+
+
+    @staticmethod
+    def get_head_dom(res):
+        dom = []
+        for line in res.iter_lines():
+            dom.append(line)
+            if re.match(r".*</\s*head\s*>", line, flags=re.IGNORECASE):
+                break
+
+        return '\n'.join(dom)
 
     @classmethod
     def search(cls, query):
@@ -58,8 +93,21 @@ class Link(database.db.basemodel):
         )
 
     @staticmethod
-    def _get_title(html):
-        bs = BeautifulSoup(html, 'html.parser')
+    def get_title(html):
+        """
+            Get the title element from a HTML document
+
+            :param str html: The html to parse
+
+            :Example:
+
+            >>> Link.get_title("xxxx<title>Title</title>xxxx")
+            'Title'
+
+            >>> print(Link.get_title("xxxx<>Title</title>xxxx"))
+            None
+        """
+        bs = BeautifulSoup(html, 'html.parser', parse_only=SoupStrainer('title'))
 
         title = bs.find("title")
         if not title:
@@ -100,3 +148,8 @@ Connection.create_table(True)
 UserMessage = Message.highlights.get_through_model()
 UserMessage.create_table(True)
 Mail.create_table(True)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+
