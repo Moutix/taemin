@@ -52,4 +52,4 @@ class TaeminShareIm(plugin.TaeminPlugin):
             return None
 
 if __name__ == "__main__":
-    print TaeminShareIm.upload_image("http://www.aardwolf.com/images/mushclient-aardwolf-336.jpg")
+    print(TaeminShareIm.upload_image("http://www.aardwolf.com/images/mushclient-aardwolf-336.jpg"))

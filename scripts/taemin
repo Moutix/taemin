@@ -5,6 +5,7 @@ import errno
 import signal
 import select
 import irc.client
+import sys
 from taemin import bot
 
 def reload_conf(signum, frame):
@@ -12,18 +13,18 @@ def reload_conf(signum, frame):
 
 if __name__ == "__main__":
     signal.signal(signal.SIGHUP, reload_conf)
-    bot = bot.Taemin()
+    bot = bot.Taemin(*sys.argv[1:])
 
     try:
         bot.start()
-    except select.error as (code, msg):
-        if code != errno.EINTR:
+    except select.error as err:
+        if err.code != errno.EINTR:
             raise
 
     while(True):
         try:
             irc.client.SimpleIRCClient.start(bot)
-        except select.error as (code, msg):
-            if code != errno.EINTR:
+        except select.error as err:
+            if err.code != errno.EINTR:
                 raise
 

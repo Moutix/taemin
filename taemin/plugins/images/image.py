@@ -83,8 +83,8 @@ def main():
     CX = "007167590149092953870:rztyz-auexq"
     image = ImageSearch(CX, APIKEY)
     image.search("taemin")
-    print image.images
-    print image.image
+    print(image.images)
+    print(image.image)
 
 if __name__ == "__main__":
     main()

@@ -47,7 +47,6 @@ class Traduction(object):
         src_language = [value.get("value")
                         for value in html.select("#gt-sl option[selected]")
                         if value.get("value") != "auto"]
-        print src_language
 
         if not src_language:
             return None
@@ -77,7 +76,7 @@ def main():
     print(trad.romaji)
     print(trad.src)
     print(trad.dst)
-    print Traduction.available_languages()
+    print(Traduction.available_languages())
 
 if __name__ == "__main__":
     main()

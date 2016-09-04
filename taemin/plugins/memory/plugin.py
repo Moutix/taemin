@@ -47,4 +47,16 @@ class TaeminMemory(plugin.TaeminPlugin):
 
                 self.offline_messages[user.name.lower()].append(datetime.now().strftime('%H:%M:%S') + " [" + source + "] " + msg.message)
 
+    def on_privmsg(self, msg):
+        if msg.key != "say":
+            return
+
+        opts = msg.value.split(" ", 1)
+        if len(opts) < 1:
+            return
+
+        self.privmsg(opts[0], opts[1])
+
+
+
 

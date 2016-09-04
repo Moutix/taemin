@@ -62,7 +62,10 @@ class Link(database.db.basemodel):
         except requests.RequestException:
             return None, None, None
 
-        content_type = res.headers["content-type"].split(";")[0] if res.headers["content-type"] else None
+        if "content-type" in res.headers:
+            content_type = res.headers["content-type"].split(";")[0]
+        else:
+            content_type = None
 
         if content_type == "text/html":
             title = cls.get_title(cls.get_head_dom(res))
@@ -125,7 +128,7 @@ class Connection(database.db.basemodel):
 
 class Message(database.db.basemodel):
     user = ForeignKeyField(User, related_name='messages')
-    message = AESEncryptedField(conf.TaeminConf().config["database"].get("aes_password", "banane"))
+    message = AESEncryptedField(conf.get_config("taemin").get("aes_password", "banane"))
     key = TextField(null=True)
     value = TextField(null=True)
     target = TextField(null=True)

@@ -18,7 +18,7 @@ class Logger(logging.Logger):
 
     def __init__(self):
         logging.Logger.__init__(self, __name__)
-        self._conf = conf.TaeminConf().config.get("general", {})
+        self._conf = conf.get_config("taemin").get("general", {})
 
         self.setLevel(self._LEVEL.get(self._conf.get("log_level"), logging.INFO))
         self.addHandler(self._get_handler())

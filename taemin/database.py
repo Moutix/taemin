@@ -29,7 +29,7 @@ class DataBase(object):
 
     @classmethod
     def new_from_conf(cls):
-        db_conf = conf.TaeminConf().config.get("database", {})
+        db_conf = conf.get_config("taemin").get("database", {})
         return cls(db_conf.get("type", "mysql"),
                    name=db_conf.get("name", "/etc/taemin/taemin.db"),
                    user=db_conf.get("user", ""),

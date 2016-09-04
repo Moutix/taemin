@@ -10,8 +10,9 @@ import threading
 from taemin import schema, conf, courriel, logger
 
 class Taemin(irc.bot.SingleServerIRCBot):
-    def __init__(self):
-        self.conf = conf.TaeminConf().config
+    def __init__(self, *args):
+        self.conf = conf.get_config("taemin")
+        self.conf.load(*args)
 
         general_conf = self.conf.get("general", {})
         self.chans = general_conf.get("chans")
@@ -52,6 +53,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
         source = self.get_nickname(ev.source.nick)
         target = ev.target
         message = ev.arguments[0]
+        print({"a": message})
         if not self.user_init[target]:
             self.init_users(target)
 
@@ -105,7 +107,6 @@ class Taemin(irc.bot.SingleServerIRCBot):
                 self.log.exception("Plugin loading failed: %s\n%s", plugin_class, e)
 
         return plugins
-
 
     def init_users(self, chan):
         for name in self.channels[chan].users():
@@ -232,7 +233,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
     def reload_conf(self):
         self.log.info("Reload configuration")
-        self.conf = conf.TaeminConf().config
+        self.conf.reload()
         self.reload_chans()
         self.plugins = self._get_plugins(True)
         self.log.info("Reload configuration done")
