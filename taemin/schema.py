@@ -116,6 +116,9 @@ class Link(database.db.basemodel):
         if not title:
             return None
 
+        if not title.string:
+            return None
+
         return title.string.strip().replace('\n', ' ').encode("utf-8")
 
 
