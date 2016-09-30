@@ -3,41 +3,43 @@
 
 from taemin import plugin
 from random import randint
-from re import split,finditer
+import re
 
 class TaeminRTD(plugin.TaeminPlugin):
     helper = {
-        "rtd": "Roll The Dice",
+        "rtd": "Roll The Dice: '!rtd XdY' casts X Y-sided dice, if 'X' or 'Xd' is omitted, then X=1",
         "rand": "Random number between 1 and 20",
         "random": "Random number between 1 and 100"
     }
-    
+
+    _default_values = {"rtd" : "6", "rand" : "20", "random" : "100"}
+
+
     def on_pubmsg(self, msg):
         if msg.key not in self.helper:
             return
 
         chan = msg.chan.name
-        
-        if msg.key == "random":
-            di = 100
-            self.privmsg(chan, "%s => %s"%(msg.key, randint(1,di)))
-        else if msg.key == "rand":
-            di = 20
-            self.privmsg(chan, "%s => %s"%(msg.key, randint(1,di)))
+
+        if msg.key == "rtd" and msg.value != "" :
+            messages = self._cast_dice(msg.value)
         else :
-            if msg.value == "" :
-                di = 6
-                self.privmsg(chan, "%s => %s"%(msg.key, randint(1,di)))
-                return
-                
-            for nbDdi_ in finditer('[0-9]+[dD]?[0-9]+', msg.value):
-                nbDdi = nbDdi_.group()
-                li = split('[dD]', nbDdi)
-                if length(li) > 1:
-                    nb = int(li[0])
-                    di = int(li[1])
-                else :
-                    di = int(li[0])
-                
-                message = " ".join([str(randint(1,di)) for i in range(0,nb)])
-                self.privmsg(chan, "%s %s => %s"%(msg.key, nbDdi, message))
+            messages = self._cast_dice(self._default_values[msg.key])
+
+        for message in messages:
+            self.privmsg(chan, message)
+
+
+    def _cast_dice(self, dice_sets, _regex = re.compile('[0-9]*[dD]?[0-9]+')):
+        for dice_set_ in _regex.finditer(dice_sets):
+            dice_set = dice_set_.group().upper()
+            count_sides = map(int, filter(None, dice_set.split('D')))
+            if len(count_sides) > 1:
+                count = count_sides[0]
+                sides = count_sides[1]
+            else :
+                count = 1
+                sides = count_sides[0]
+
+            result = " ".join([str(randint(1, sides)) for _ in range(count)])
+            yield "RTD(%s) => %s" % (dice_set, result)
