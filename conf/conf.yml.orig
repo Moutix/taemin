@@ -46,6 +46,7 @@ plugins:
   plugins.shifumi.plugin: "TaeminShifumi"
   plugins.todo.plugin: "TaeminTodo"
   plugins.shareim.plugin: "TaeminShareIm"
+  plugins.rtd.plugin: "TaeminRTD"
 
 
 ImageSearch:
