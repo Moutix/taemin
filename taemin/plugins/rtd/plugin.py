@@ -7,7 +7,7 @@ import re
 
 class TaeminRTD(plugin.TaeminPlugin):
     helper = {
-        "rtd": "Roll The Dice: '!rtd XdY' casts X Y-sided dice, if 'X' or 'Xd' is omitted, then X=1",
+        "rtd": "Roll The Dice: '!rtd [[[X]d]Y]' casts X Y-sides dice",
         "rand": "Random number between 1 and 20",
         "random": "Random number between 1 and 100"
     }
