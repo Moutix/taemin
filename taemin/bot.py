@@ -7,7 +7,7 @@ import re
 import datetime
 import threading
 
-from taemin import schema, conf, courriel, logger
+from taemin import schema, conf, courriel, logger, profile
 
 class Taemin(irc.bot.SingleServerIRCBot):
     def __init__(self, *args):
@@ -49,6 +49,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
         self.safe_load_plugin("on_join", connection)
 
+    @profile.profile
     def on_pubmsg(self, serv, ev):
         source = self.get_nickname(ev.source.nick)
         target = ev.target
