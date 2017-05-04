@@ -50,9 +50,9 @@ class TaeminRSS(plugin.TaeminPlugin):
             feed, test = Feed.get_or_create(name=feed.name, url=feed.rss)
         return feed
 
-    def get_entry(self, feed, title, link, chan):
+    def get_entry(self, feed, link, chan):
         try:
-            return FeedEntry.get(link=link, title=title, chan=chan)
+            return FeedEntry.get(link=link, chan=chan)
         except FeedEntry.DoesNotExist:
             return None
 
@@ -75,9 +75,8 @@ class TaeminRSS(plugin.TaeminPlugin):
                 self.taemin.log.warning("RSS plugin: %s is not a valid chan" % chan)
                 continue
 
-            entry = self.get_entry(feed, title, link, chan)
+            entry = self.get_entry(feed, link, chan)
             if entry:
                 continue
             self.taemin.connection.privmsg(chan.name, "[%s] %s: %s" % (feed.name, title, link))
             FeedEntry.create(chan=chan, feed=feed, title=title, link=link)
-

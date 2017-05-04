@@ -49,8 +49,8 @@ def main():
     def callback(feed, title, link):
         print("%s: %s" % (title, link))
 
-    rss = "http://www.animefansftw.org/feed/"
-    feed = FeedThread(rss, callback)
+    rss = "http://sametmax.com/feed/"
+    feed = FeedThread(rss, callback, refresh=2)
     feed.start()
 
 if __name__ == "__main__":
