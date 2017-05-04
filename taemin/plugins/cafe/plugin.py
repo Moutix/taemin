@@ -9,7 +9,7 @@ class TaeminCafe(plugin.TaeminPlugin):
 
 
     def on_pubmsg(self, msg):
-        if msg.key not in ("all", "cafe"):
+        if msg.key not in ("all", 'tous', "cafe"):
             return
 
         chan = msg.chan.name
