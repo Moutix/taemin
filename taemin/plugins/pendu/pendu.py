@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """ Mon super Pendu """
 
 import random
@@ -110,4 +107,3 @@ if __name__ == "__main__":
     print(pendu.pretty_print())
     pendu.try_letter("U")
     print(pendu.pretty_print())
-

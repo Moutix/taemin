@@ -1,9 +1,10 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import plugin
 from random import randint
 import re
+
+from taemin import plugin
 
 class TaeminRTD(plugin.TaeminPlugin):
     helper = {
@@ -21,23 +22,23 @@ class TaeminRTD(plugin.TaeminPlugin):
 
         chan = msg.chan.name
 
-        if msg.key == "rtd" and msg.value != "" :
+        if msg.key == "rtd" and msg.value != "":
             messages = self._cast_dice(msg.value)
-        else :
+        else:
             messages = self._cast_dice(self._default_values[msg.key])
 
         for message in messages:
             self.privmsg(chan, message)
 
 
-    def _cast_dice(self, dice_sets, _regex = re.compile('[0-9]*[dD]?[0-9]+')):
+    def _cast_dice(self, dice_sets, _regex=re.compile('[0-9]*[dD]?[0-9]+')):
         for dice_set_ in _regex.finditer(dice_sets):
             dice_set = dice_set_.group().upper()
-            count_sides = map(int, filter(None, dice_set.split('D')))
+            count_sides = list(map(int, filter(None, dice_set.split('D'))))
             if len(count_sides) > 1:
                 count = count_sides[0]
                 sides = count_sides[1]
-            else :
+            else:
                 count = 1
                 sides = count_sides[0]
 

@@ -20,5 +20,3 @@ class TaeminAscii(plugin.TaeminPlugin):
             self.privmsg(chan, " \\o  o/\\o/\\o  o/")
             self.privmsg(chan, "  |\\/|  |  |\\/|")
             self.privmsg(chan, " / \\/ \\/ \\/ \\/ \\")
-
-

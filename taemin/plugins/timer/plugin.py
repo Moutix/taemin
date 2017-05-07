@@ -1,13 +1,14 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from threading import Thread
-from taemin import plugin
 import time
 import re
 
+from threading import Thread
+from taemin import plugin
+
 class Timer(Thread):
-    def __init__(self, taemin, _time, chan, msg = ""):
+    def __init__(self, taemin, _time, chan, msg=""):
         Thread.__init__(self)
         self.taemin = taemin
         self._time = _time
@@ -48,4 +49,3 @@ class TaeminTimer(plugin.TaeminPlugin):
             self.privmsg(chan, "[Timer %d] Démarre pour %s secondes" % (self.nb_timer, _time))
         else:
             self.privmsg(chan, "[Timer] Usage : Temps (en s) + message (facultatif), ex : !timer 666 Pouet")
-

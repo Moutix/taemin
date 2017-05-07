@@ -49,4 +49,3 @@ class TaeminLinks(plugin.TaeminPlugin):
         link.tags = tags[1]
         link.save()
         self.privmsg(chan, "Tags ajoutés à ce lien: %s" % tags[1])
-

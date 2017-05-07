@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
+import re
 import datetime
 import requests
-import re
 
 from playhouse.fields import ManyToManyField, AESEncryptedField
 from peewee import *
@@ -131,7 +131,8 @@ class Connection(database.db.basemodel):
 
 class Message(database.db.basemodel):
     user = ForeignKeyField(User, related_name='messages')
-    message = AESEncryptedField(conf.get_config("taemin").get("aes_password", "banane"))
+    #message = AESEncryptedField(conf.get_config("taemin").get("aes_password", "banane").encode("utf-8"))
+    message = TextField()
     key = TextField(null=True)
     value = TextField(null=True)
     target = TextField(null=True)
@@ -144,7 +145,7 @@ class Message(database.db.basemodel):
 class Mail(database.db.basemodel):
     user = ForeignKeyField(User, related_name='mail')
     mail = TextField()
-    created_at = DateTimeField(default = datetime.datetime.now)
+    created_at = DateTimeField(default=datetime.datetime.now)
 
 User.create_table(True)
 Chan.create_table(True)
@@ -158,4 +159,3 @@ Mail.create_table(True)
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
-

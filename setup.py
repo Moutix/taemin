@@ -35,6 +35,24 @@ setup(
 
     include_package_data=True,
 
+    classifiers=[
+        'Programming Language :: Python',
+        'License :: OSI Approved :: MIT License',
+        'Topic :: Games/Entertainment',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3 :: Only',
+    ],
+
+    install_requires=[
+        'irc',
+        'peewee',
+        'bs4',
+        'pycrypto',
+        'feedparser',
+        'requests',
+        'romkan',
+    ],
+
     url='http://github.com/ningirsu/taemin',
 
     license="MIT",

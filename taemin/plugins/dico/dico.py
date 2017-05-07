@@ -1,10 +1,9 @@
-#!/usr/bin/env python2
-# -*- coding: utf8 -*-
+""" Dico interface """
 
-from bs4 import BeautifulSoup
+import urllib.parse
+
 import requests
-import logging
-import urllib
+from bs4 import BeautifulSoup
 
 class Dico(object):
     URL = "http://www.larousse.fr/dictionnaires/rechercher"
@@ -19,23 +18,23 @@ class Dico(object):
 
     def _get_html(self):
         try:
-            res = requests.get("%s?q=%s&l=francais&culture=" % (self.URL, urllib.quote(self.word))).text
+            res = requests.get("%s?q=%s&l=francais&culture=" % (self.URL, urllib.parse.quote(self.word))).text
         except requests.RequestException:
             return None
 
         return BeautifulSoup(res, 'html.parser')
 
     def _find_suggestions(self, html):
-        return [item.getText().encode("utf-8") for item in html.select("section.corrector ul > li > h3 > a")]
+        return [item.getText() for item in html.select("section.corrector ul > li > h3 > a")]
 
     def _find_descriptions(self, html):
-        return [item.getText().encode("utf-8") for item in html.find_all("li", {"class": "DivisionDefinition"})]
+        return [item.getText() for item in html.find_all("li", {"class": "DivisionDefinition"})]
 
     def _find_definition(self, html):
         definition = html.find("p", {"class": "CatgramDefinition"})
         if not definition:
             return None
-        return definition.getText().encode("utf-8")
+        return definition.getText()
 
 def main():
     dico = Dico("mémé")
@@ -45,5 +44,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

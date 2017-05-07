@@ -265,7 +265,7 @@ class LoveLetter(object):
         elif len(self.players.keys()) == 1:
             plyr = self.players.values()[0]
         elif not self.cards:
-            for player in self.players.itervalues():
+            for player in self.players.values():
                 if player.active_card() and player.active_card().value > mx:
                     mx = player.active_card().value
                     plyr = player
@@ -288,4 +288,3 @@ if __name__ == "__main__":
     game.add_player("taemin")
     game.add_player("miku")
     game.start()
-

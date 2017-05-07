@@ -3,19 +3,19 @@
 
 import smtplib
 
-from taemin import schema, conf
-from schema import Mail
-from email.MIMEText import MIMEText
-from email.MIMEImage import MIMEImage
-from email.MIMEMultipart import MIMEMultipart
-import email, re, requests
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+from taemin import schema
+
+import requests
 
 class Mailage:
     def __init__(self, bot):
         self.bot = bot
         self.set_email()
 
-    def mailage(self, chan, content,user, subject):
+    def mailage(self, chan, content, user, subject):
         email = self.get_email(user, chan)
         if not email:
             self.bot.connection.privmsg(chan, "L'utilisateur %s n'a pas configuré d'adresse mail" % user.name)
@@ -37,23 +37,23 @@ class Mailage:
             if line.startswith("http"):
                 self.guesstype(line)
                 continue
-            self.htmlmsg += "<p> {filler} </p>".format(filler= line)
+            self.htmlmsg += "<p> {filler} </p>".format(filler=line)
             self.plainText += line
 
     def guesstype(self, location):
         try:
             r = requests.get(location)
         except requests.exceptions.RequestException:
-            self.htmlmsg += "<p><a href ='{link}'>{link}</a> </p>".format(link = location)
+            self.htmlmsg += "<p><a href ='{link}'>{link}</a> </p>".format(link=location)
             self.plainText += location
 
             return "<lien>%s" % location
 
         if r.headers["content-type"] and r.headers["content-type"].split("/")[0] == "image":
-            self.htmlmsg += "<p><img src = '{url}'> </p>".format(url = r.url)
+            self.htmlmsg += "<p><img src = '{url}'> </p>".format(url=r.url)
             self.plainText += r.url
 
-        self.htmlmsg += "<p><a href ='{url}'>{url}</a> </p>".format(url = r.url)
+        self.htmlmsg += "<p><a href ='{url}'>{url}</a> </p>".format(url=r.url)
         self.plainText += r.url
 
 
@@ -66,7 +66,7 @@ class Mailage:
         msg.attach(part2)
 
         mail_conf = self.bot.conf.get("Mail_conf", {})
-        port = mail_conf.get("port",25)
+        port = mail_conf.get("port", 25)
         server = mail_conf.get("server", "localhost")
 
         s = smtplib.SMTP(server, port)
@@ -75,21 +75,21 @@ class Mailage:
 
     def get_email(self, user, chan):
         try:
-            res = Mail.get(schema.Mail.user == user)
+            res = schema.Mail.get(schema.Mail.user == user)
             return res.mail
         except schema.Mail.DoesNotExist:
             return None
 
     def set_email(self):
-        delete = Mail.delete()
+        delete = schema.Mail.delete()
         delete.execute()
-        for pseudo, mail in self.bot.conf.get("mails", {}).iteritems():
+        for pseudo, mail in self.bot.conf.get("mails", {}).items():
             user = self.get_user(pseudo)
-            Mail.create(user=user, mail=mail)
+            schema.Mail.create(user=user, mail=mail)
         return
 
     def get_user(self, name):
         try:
             return schema.User.get(schema.User.name % name)
         except schema.User.DoesNotExist:
-            self.bot.log("error", "The user that called this function(mail) does not exist in the user database")
+            self.bot.log.error("User %s doesn't exist in the database")

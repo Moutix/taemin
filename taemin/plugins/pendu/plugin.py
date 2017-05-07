@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 from taemin import plugin
-from pendu import Pendu
+from .pendu import Pendu
 
 class TaeminPendu(plugin.TaeminPlugin):
     helper = {"pendu": "Joue au pendu"}
@@ -25,7 +25,7 @@ class TaeminPendu(plugin.TaeminPlugin):
             test = self.pendu.test(msg.value)
         except NameError as err:
             test = False
-            self.privmsg(chan, "Nope: %s" % err.message)
+            self.privmsg(chan, "Nope: %s" % str(err))
 
         if self.pendu.victory:
             self.privmsg(chan, "Yeah!!! Tu as gagné en seulement %d essais. Le mot était bien %s" % (len(self.pendu.attempt), self.pendu.word))
@@ -55,4 +55,3 @@ class TaeminPendu(plugin.TaeminPlugin):
         self.pendu.new_word(0, msg.value)
         for connection in msg.user.connections:
             self.privmsg(connection.chan.name, "Nouveau pendu: %s" % self.pendu.print_word())
-

@@ -1,10 +1,11 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from dico import Dico
-from taemin import plugin
 import os
 import random
+
+from .dico import Dico
+from taemin import plugin
 
 class TaeminDico(plugin.TaeminPlugin):
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))

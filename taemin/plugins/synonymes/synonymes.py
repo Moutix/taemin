@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
+import urllib.parse
 from bs4 import BeautifulSoup
 import requests
-import urllib
 
 class Synonymes(object):
     URL = "http://www.crisco.unicaen.fr/des/synonymes"
@@ -22,7 +22,7 @@ class Synonymes(object):
     @classmethod
     def _get_html(cls, word):
         try:
-            res = requests.get("%s/%s" % (cls.URL, urllib.quote(word))).text
+            res = requests.get("%s/%s" % (cls.URL, urllib.parse.quote(word))).text
         except requests.RequestException:
             return None
 
@@ -36,5 +36,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

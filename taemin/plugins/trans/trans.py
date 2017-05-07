@@ -24,10 +24,10 @@ class Transliterate(object):
         self.trans = self.alphabets.get(self.alphabet, self._no_alphabet)()
 
     def _to_hiragana(self):
-        return romkan.to_hiragana(self.word).encode("utf-8")
+        return romkan.to_hiragana(self.word)
 
     def _to_katakana(self):
-        return romkan.to_katakana(self.word).encode("utf-8")
+        return romkan.to_katakana(self.word)
 
     def _to_romaji(self):
         return romkan.to_roma(self.word.decode("utf-8"))
@@ -39,18 +39,16 @@ class Transliterate(object):
         url = "http://www.kawa.net/works/hangul/hangul.cgi"
         try:
             html = requests.post(url, data={"query": self.word}).text
-        except requests.exceptions.RequestException as err:
-            print(err)
+        except requests.exceptions.RequestException:
             return self.word
         soup = BeautifulSoup(html, 'html.parser')
-        return soup.select("form font[face=GulimChe]").pop().text.encode("utf-8").strip()
+        return soup.select("form font[face=GulimChe]").pop().text.strip()
 
     def _to_roman(self):
         url = "http://www.kawa.net/works/ajax/romanize/romanize.cgi"
         try:
             html = requests.post(url, data={"mode": "hangul", "q": self.word}).text
-        except requests.exceptions.RequestException as err:
-            print(err)
+        except requests.exceptions.RequestException:
             return self.word
         soup = BeautifulSoup(html, 'html.parser')
         return "".join([child.attrs.get("title", " ") for child in soup.find_all("span")])
@@ -60,4 +58,3 @@ if __name__ == "__main__":
     print(Transliterate("にんじゃ", "romaji").trans)
     print(Transliterate("taemin", "hangul").trans)
     print(Transliterate("태민", "roman").trans)
-

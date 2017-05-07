@@ -1,9 +1,10 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import plugin
-from todo_schema import Todo
 import re
+
+from taemin import plugin
+from .todo_schema import Todo
 
 class TaeminTodo(plugin.TaeminPlugin):
     helper = {"todo": "Things to do in taemin. Use !todo (add nom)|(del index)|(assign index user)|(user|pattern)"}
@@ -77,9 +78,7 @@ class TaeminTodo(plugin.TaeminPlugin):
         if patern and patern.strip():
             request = request & (Todo.message.contains(patern))
 
-        return (Todo.select()
-                    .where(request)
-                    .limit(limit))
+        return Todo.select().where(request).limit(limit)
 
     @classmethod
     def get_todo(cls, ident):

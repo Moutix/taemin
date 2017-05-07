@@ -5,8 +5,6 @@ import glob
 import os
 import random
 
-from io import open
-
 from taemin import plugin
 
 class TaeminQuizz(plugin.TaeminPlugin):
@@ -45,24 +43,24 @@ class TaeminQuizz(plugin.TaeminPlugin):
         if len(pvalue) == 1:
             self.privmsg(
                 chan,
-                "Question: %s" % self.current_question(quizz)[0].encode("utf-8")
+                "Question: %s" % self.current_question(quizz)[0]
             )
             return
 
         answer = pvalue[1]
 
-        valid_answer = self.current_question(quizz)[1].encode("utf-8")
+        valid_answer = self.current_question(quizz)[1]
         if self.answer_quizz(quizz, answer):
             self.privmsg(
                 chan,
                 "Bonne réponse! question suivante: %s" % (
-                    self.current_question(quizz)[0].encode("utf-8")
+                    self.current_question(quizz)[0]
                 )
             )
         else:
             self.privmsg(chan, "Mauvaise réponse! c'était %s. Nouvelle question: %s" % (
                 valid_answer,
-                self.current_question(quizz)[0].encode("utf-8")
+                self.current_question(quizz)[0]
             ))
 
     @classmethod

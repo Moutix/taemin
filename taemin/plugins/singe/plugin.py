@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from singe import Singe
 from taemin import plugin
+from .singe import Singe
 
 class TaeminSinge(plugin.TaeminPlugin):
     helper = {"singe": "Joue au singe. Usage: !singe lettre"}
@@ -26,7 +26,7 @@ class TaeminSinge(plugin.TaeminPlugin):
             test = self.singe.add_letter(msg.value)
         except NameError as err:
             test = None
-            self.privmsg(chan, "Nope: %s" % err.message)
+            self.privmsg(chan, "Nope: %s" % str(err))
 
         if test:
             if self.singe.play():
@@ -41,4 +41,3 @@ class TaeminSinge(plugin.TaeminPlugin):
         elif test is False:
             self.privmsg(chan, "T'as perdu. :p Je pensais à ça : %s" % self.singe.word())
             self.singe.restart()
-

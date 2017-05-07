@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from synonymes import Synonymes
 from taemin import plugin
+from .synonymes import Synonymes
 
 class TaeminSynonymes(plugin.TaeminPlugin):
     helper = {"synonymes": "Cherche les synonymes d'un mot"}
@@ -20,4 +20,3 @@ class TaeminSynonymes(plugin.TaeminPlugin):
             return
 
         self.privmsg(chan, "Pas trouvé de synonymes...")
-

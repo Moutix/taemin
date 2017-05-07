@@ -33,7 +33,7 @@ class TaeminShareIm(plugin.TaeminPlugin):
                 "first-view": "0",
                 "crypt": "0",
                 "delete-day": "0"
-                }
+               }
         try:
             res = requests.post(cls._URL, data=data, verify=False).json()
         except requests.RequestException:
@@ -48,7 +48,7 @@ class TaeminShareIm(plugin.TaeminPlugin):
     def realurl(url):
         try:
             return requests.get(url).url
-        except requests.exceptions.RequestException as err:
+        except requests.exceptions.RequestException:
             return None
 
 if __name__ == "__main__":

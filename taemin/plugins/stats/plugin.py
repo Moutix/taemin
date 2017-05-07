@@ -69,6 +69,5 @@ class TaeminStats(plugin.TaeminPlugin):
 def main():
     print(list(TaeminStats.get_best_users(limit=5)))
 
-
 if __name__ == "__main__":
     main()

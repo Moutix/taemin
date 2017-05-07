@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from trad import Traduction
 from taemin import plugin
+from .trad import Traduction
 
 class TaeminTrad(plugin.TaeminPlugin):
     helper = {"trad": "Traduit une phrase. Usage: !trad langue1 langue2 mot"}
@@ -41,4 +41,3 @@ class TaeminTrad(plugin.TaeminPlugin):
         options["src"] = option[0]
         options["dst"] = option[1]
         return options
-

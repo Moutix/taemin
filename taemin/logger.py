@@ -1,11 +1,11 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+""" Logging module """
 
-import conf
 import logging
 import logging.handlers
 import sys
 import traceback
+
+from taemin import conf
 
 class Logger(logging.Logger):
     _LEVEL = {

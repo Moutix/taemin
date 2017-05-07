@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 from taemin import plugin
-from bugmenot import BugMeNot
+from taemin.plugins.bugmenot.bugmenot import BugMeNot
 
 class TaeminBugMeNot(plugin.TaeminPlugin):
     helper = {"login": "Return a login for the given url"}

@@ -24,6 +24,5 @@ class TaeminUntiny(plugin.TaeminPlugin):
     def _url_to_untiny(self, url):
         try:
             return requests.get(url).url
-        except requests.exceptions.RequestException as err:
+        except requests.exceptions.RequestException:
             return None
-

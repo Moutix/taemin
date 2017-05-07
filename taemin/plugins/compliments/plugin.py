@@ -12,7 +12,7 @@ class TaeminCompliments(plugin.TaeminPlugin):
 
     def on_pubmsg(self, msg):
         if self.iskw(msg.message):
-            self.privmsg(msg.chan.name, random.choice(self.compliments).encode("utf-8"))
+            self.privmsg(msg.chan.name, random.choice(self.compliments))
 
     def iskw(self, message):
         for kw in self.com_keywords:

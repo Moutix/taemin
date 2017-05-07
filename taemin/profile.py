@@ -3,7 +3,7 @@
 import tempfile
 import cProfile
 import pstats
-import StringIO
+import io
 import time
 
 from taemin import logger
@@ -38,7 +38,7 @@ def profile(func):
 
         LOGGER.info("Dumping stats to %r" % stats_file)
 
-        (pstats.Stats(profiling, stream=StringIO.StringIO())
+        (pstats.Stats(profiling, stream=io.StringIO())
                 .sort_stats("cumulative")
                 .dump_stats(stats_file))
 

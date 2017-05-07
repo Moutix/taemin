@@ -26,5 +26,3 @@ class TaeminSayNo(plugin.TaeminPlugin):
             test |= key in message
 
         return test
-
-

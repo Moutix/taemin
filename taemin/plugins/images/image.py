@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-import requests
 import random
+import requests
 
 class GoogleError(Exception):
     def __init__(self, value):
@@ -17,7 +17,7 @@ class ImageSearch(object):
     def __init__(self, apicx, apikey):
         self.apicx = apicx
         self.apikey = apikey
- 
+
         self.word = None
         self.html = None
         self.images = None
@@ -34,8 +34,8 @@ class ImageSearch(object):
             self.html = self._get_json()
         except GoogleError as err:
             self.html = None
-            self.image = err
-            self.tiny = err
+            self.image = str(err)
+            self.tiny = str(err)
 
         if self.html:
             self.images = self._get_images()
@@ -88,4 +88,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

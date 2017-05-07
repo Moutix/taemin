@@ -1,10 +1,11 @@
-#!/usr/bin/env python2
-# -*- coding: utf8 -*-
+""" Quotation plugin """
 
-from taemin import schema, plugin
-from quotation_schema import Quotation
 import re
-from peewee import fn
+
+from taemin import database
+from taemin import schema
+from taemin import plugin
+from .quotation_schema import Quotation
 
 class TaeminQuotation(plugin.TaeminPlugin):
     helper = {"quote": "Quote un message. Usage: !quote add|show|suppress pseudo indice|nombre de quotes à supprimer(-indice supérieur)"}
@@ -13,9 +14,9 @@ class TaeminQuotation(plugin.TaeminPlugin):
         if msg.key != "quote":
             return
 
-        chan = msg.chan.name 
+        chan = msg.chan.name
 
-        random_func = fn.Rand
+        random_func = database.db.random_func
 
         if msg.value == "":
             result = Quotation.select().where(Quotation.chan == msg.chan).order_by(random_func()).limit(1)
@@ -61,12 +62,11 @@ class TaeminQuotation(plugin.TaeminPlugin):
                     self.privmsg(chan, "La quote numéro %s a bien été supprimée" % quote_limit)
                     return
 
-            except schema.Quotation.DoesNotExist:
+            except Quotation.DoesNotExist:
                 self.privmsg(chan, "Cette quote n'existe pas")
             return
 
         if key == "show":
-           
             result = Quotation.select().where((Quotation.value.contains(quote_user)) & (Quotation.chan == msg.chan)).order_by(random_func()).limit(quote_limit)
             return
 
@@ -77,7 +77,7 @@ class TaeminQuotation(plugin.TaeminPlugin):
             return None
 
 
-    def prout(self, user, chan, limit, uplimit ):
+    def prout(self, user, chan, limit, uplimit):
         quotes = [quote for quote in (
             schema
             .Message

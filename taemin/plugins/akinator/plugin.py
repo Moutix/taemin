@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from akinator import Akinator, AkinatorError
+from taemin.plugins.akinator.akinator import Akinator, AkinatorError
 from taemin import plugin
 
 class TaeminAkinator(plugin.TaeminPlugin):
@@ -58,4 +58,3 @@ class TaeminAkinator(plugin.TaeminPlugin):
             if progression <= value:
                 return expression
         return "..."
-

@@ -1,9 +1,11 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from schema_rss import FeedEntry, Feed
-from feed_thread import FeedThread
+
 from taemin import schema, plugin
+
+from .feed_thread import FeedThread
+from .schema_rss import FeedEntry, Feed
 
 class TaeminRSS(plugin.TaeminPlugin):
     def __init__(self, taemin):
@@ -13,7 +15,7 @@ class TaeminRSS(plugin.TaeminPlugin):
             taemin.log.warning("Your RSS parser is not configure")
 
         self.feeds = []
-        for rss, params in self.conf.iteritems():
+        for rss, params in self.conf.items():
             self.feeds.append(FeedThread(params.get("url", ""),
                                          self.on_newfeed,
                                          regex=params.get("regex", None),

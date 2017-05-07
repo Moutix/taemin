@@ -20,4 +20,3 @@ class TaeminExample(plugin.TaeminPlugin):
 
     def on_part(self, connection):
         pass
-

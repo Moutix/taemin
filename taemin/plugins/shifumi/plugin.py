@@ -1,9 +1,10 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from taemin import plugin
-from shifumi_schema import Shifumi
 import random
+
+from taemin import plugin
+from .shifumi_schema import Shifumi
 
 class TaeminShifumi(plugin.TaeminPlugin):
     helper = {"shifumi": "Play shifumi: !shifumi rock|scissor|paper"}
@@ -29,7 +30,7 @@ class TaeminShifumi(plugin.TaeminPlugin):
     def play(self, value, user=None):
         my_value = self.guess_play(value, user)
         if not my_value:
-            my_value = random.choice(self.data.keys())
+            my_value = random.choice(list(self.data))
 
         self.save(my_value, value, user)
 
@@ -72,4 +73,3 @@ class TaeminShifumi(plugin.TaeminPlugin):
 if __name__ == "__main__":
     print(TaeminShifumi(None).play("rock"))
     print(TaeminShifumi(None).play("rock"))
-

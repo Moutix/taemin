@@ -75,6 +75,5 @@ class TaeminPause(plugin.TaeminPlugin):
         if pause < 3600:
             return time.strftime("%M minutes et %S secondes", ptime)
         if pause < 3600*24:
-            return time.strftime("%H heures et %M minutes" , ptime)
-        return time.strftime("%d jours et %H heures" , ptime)
-
+            return time.strftime("%H heures et %M minutes", ptime)
+        return time.strftime("%d jours et %H heures", ptime)

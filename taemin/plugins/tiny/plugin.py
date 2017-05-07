@@ -24,7 +24,6 @@ class TaeminTiny(plugin.TaeminPlugin):
     def _url_to_tiny(self, url):
         try:
             tinyurl = requests.get("http://tinyurl.com/api-create.php", params={"url": url}).text
-        except requests.exceptions.RequestException as err:
+        except requests.exceptions.RequestException:
             return None
         return tinyurl
-

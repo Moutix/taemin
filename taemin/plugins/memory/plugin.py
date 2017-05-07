@@ -56,7 +56,3 @@ class TaeminMemory(plugin.TaeminPlugin):
             return
 
         self.privmsg(opts[0], opts[1])
-
-
-
-

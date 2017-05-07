@@ -1,13 +1,22 @@
-#!/usr/bin/env python2
-# -*- coding: utf8 -*-
+""" Main bot file """
 
-import irc.bot
-import irc.client
 import re
 import datetime
 import threading
 
-from taemin import schema, conf, courriel, logger, profile
+import irc.bot
+import irc.client
+
+try:
+    from importlib import reload
+except ImportError:
+    pass
+
+from taemin import schema
+from taemin import conf
+from taemin import courriel
+from taemin import logger
+# from taemin import profile
 
 class Taemin(irc.bot.SingleServerIRCBot):
     def __init__(self, *args):
@@ -23,8 +32,8 @@ class Taemin(irc.bot.SingleServerIRCBot):
         self.server = general_conf.get("server", "")
         self.port = general_conf.get("port", 6667)
 
-        self.mailation = courriel.Mailage(self)
         self.log = logger.Logger()
+        self.mailation = courriel.Mailage(self)
 
         irc.bot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
 
@@ -49,12 +58,11 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
         self.safe_load_plugin("on_join", connection)
 
-    @profile.profile
+    #@profile.profile
     def on_pubmsg(self, serv, ev):
         source = self.get_nickname(ev.source.nick)
         target = ev.target
         message = ev.arguments[0]
-        print({"a": message})
         if not self.user_init[target]:
             self.init_users(target)
 
@@ -96,7 +104,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
     def _get_plugins(self, force_reload=False):
         plugins = []
-        for path, plugin_class in self.conf.get("plugins", {}).iteritems():
+        for path, plugin_class in self.conf.get("plugins", {}).items():
             try:
                 module = __import__("taemin.%s" % path, fromlist=[plugin_class])
                 if force_reload:
@@ -260,12 +268,18 @@ class Taemin(irc.bot.SingleServerIRCBot):
         return nick
 
     def safe_load_plugin(self, event, *opt):
+        def run_safe(func, app):
+            def safe_func(*args, **kwargs):
+                try:
+                    func(*args, **kwargs)
+                except Exception as err:
+                    self.log.exception("Message %s %s %s",
+                                       type(app).__name__, app.__module__, err)
+
+            return safe_func
+
         for app in self.plugins:
-            try:
-                threading.Thread(target=getattr(app, event), args=opt).start()
-            except Exception as e:
-                self.log.exception("Message %s %s %s",
-                                   type(app).__name__, app.__module__, e)
+            threading.Thread(target=run_safe(getattr(app, event), app), args=opt).start()
 
 def main():
     name = "Ningirsu"
@@ -275,4 +289,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

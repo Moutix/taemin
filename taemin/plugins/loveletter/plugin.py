@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf8 -*-
 
-from loveletter import LoveLetter
+from .loveletter import LoveLetter
 from taemin import plugin
 
 class TaeminLoveLetter(plugin.TaeminPlugin):
@@ -26,7 +26,8 @@ class TaeminLoveLetter(plugin.TaeminPlugin):
             try:
                 self.loveletter.start()
             except ValueError as err:
-                self.privmsg(chan, "%s, join pour rejoindre la partie" % err.message)
+                self.privmsg(chan, "%s, join pour rejoindre la partie" % str(err))
+
             for player in self.loveletter.turn:
                 self.privmsg(player.name, "Tes cartes : %s" % player.cards)
                 self.privmsg(player.name, "Pour jouer dans le chan : !loveletter play carte_à_jouer personne_visée carte_visée")
@@ -37,7 +38,8 @@ class TaeminLoveLetter(plugin.TaeminPlugin):
             try:
                 self.loveletter.add_player(source)
             except NameError as err:
-                self.privmsg(chan, err.message)
+                self.privmsg(chan, str(err))
+
         elif value[:4] == "play":
             options = value.split(" ")
             card = ""
@@ -52,7 +54,8 @@ class TaeminLoveLetter(plugin.TaeminPlugin):
                 try:
                     result = self.loveletter.play(source, card, target_player, target_card)
                 except (NameError, ValueError) as err:
-                    result = err.message
+                    result = str(err)
+
                 if result[:4] == "PRIV":
                     self.privmsg(source, "%s" % result[5:])
                 else:
@@ -68,4 +71,3 @@ class TaeminLoveLetter(plugin.TaeminPlugin):
 
         for line in self.loveletter.print_state().split("\n"):
             self.privmsg(chan, "%s" % line)
-

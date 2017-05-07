@@ -31,4 +31,3 @@ class TaeminPlugin(object):
             self.taemin.create_priv_message(self.taemin.name, chan, msg)
 
         self.taemin.connection.privmsg(chan, msg)
-

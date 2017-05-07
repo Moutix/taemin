@@ -21,4 +21,3 @@ class TaeminCafe(plugin.TaeminPlugin):
             message = "%s %s" % (message, msg.value)
 
         self.privmsg(chan, message)
-

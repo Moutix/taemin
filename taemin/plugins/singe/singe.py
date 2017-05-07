@@ -27,10 +27,10 @@ class Singe(object):
 
         if not available_words:
             return False
-        else:
-            self.available_words = available_words
-            self.start_word = start_word
-            return True
+
+        self.available_words = available_words
+        self.start_word = start_word
+        return True
 
     def play(self):
         words = self.next_words()
@@ -62,4 +62,3 @@ if __name__ == "__main__":
 
     print("victory: " + str(singe.victory))
     print(singe.word())
-

@@ -1,9 +1,11 @@
 #!/usr/bin/env python2
 #-*- coding: utf8 -*-
 
-from taemin import database, schema
-from peewee import *
 import datetime
+
+from peewee import *
+
+from taemin import database, schema
 
 class Quotation(database.db.basemodel):
     chan = ForeignKeyField(schema.Chan, related_name='quotes')

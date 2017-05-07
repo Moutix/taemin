@@ -2,15 +2,17 @@
 # -*- coding: utf8 -*-
 
 import re
-import requests
-import urllib
-import dateutil.parser
+import urllib.parse
+from datetime import date, timedelta
 import json
 import shlex
 import itertools
-from datetime import date, timedelta
 from optparse import OptionParser
+
 from bs4 import BeautifulSoup
+import requests
+import dateutil.parser
+
 from taemin import plugin
 
 class OptionParsingError(RuntimeError):
@@ -129,7 +131,7 @@ class AlloCine(object):
         self.id_ac = id_ac
         self.name = name
         self.address = address
-        self.maps_link = "https://www.google.fr/maps/place/%s/" % urllib.quote(self.address)
+        self.maps_link = "https://www.google.fr/maps/place/%s/" % urllib.parse.quote(self.address)
 
     def __str__(self):
         return "<cine-%s %s>" % (self.id, self.name)
@@ -246,7 +248,7 @@ class TaeminCine(plugin.TaeminPlugin):
                     self.privmsg(chan, ", ".join(["[%s] %s" % (cine.id, cine.name) for cine in group_cines]))
                 return
 
-            seances.sort(cmp=lambda x, y: cmp(x.cine, y.cine))
+            seances.sort(key=lambda x: x.cine)
             for key, seance in itertools.groupby(seances, lambda x: x.cine):
                 self.privmsg(chan, "[%s] %s: %s" % (key.id, key.name, AlloSeance.to_str(seance)))
 
@@ -357,20 +359,20 @@ class TaeminCine(plugin.TaeminPlugin):
         if not raw_result or not raw_result.get("theaters") or not raw_result.get("showtimes"):
             return
 
-        for id_ac, theater in raw_result.get("theaters", {}).iteritems():
+        for id_ac, theater in raw_result.get("theaters", {}).items():
             theaters[id_ac] = AlloCine(theater.get("id"),
                                        id_ac,
                                        theater.get("name", "").encode("utf-8"),
                                        "%s. %s" % (theater.get("address", {}).get("address", "").encode("utf-8"),
                                                    theater.get("address", {}).get("city", "").encode("utf-8")))
 
-        for id_ac, showtimes in raw_result.get("showtimes", {}).iteritems():
+        for id_ac, showtimes in raw_result.get("showtimes", {}).items():
             for seance in self.parse_showtimes(showtimes, theaters[id_ac], film, localization):
                 yield seance
 
     def parse_showtimes(self, showtimes, cine, film, localization):
-        for dates in showtimes.itervalues():
-            for shows in dates.itervalues():
+        for dates in showtimes.values():
+            for shows in dates.values():
                 for show in shows:
                     version = show.get("version", "").encode("utf-8")
                     quality = show.get("format", {}).get("name", "").encode("utf-8")
@@ -397,4 +399,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

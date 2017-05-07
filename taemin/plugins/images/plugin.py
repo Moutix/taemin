@@ -2,9 +2,13 @@
 # -*- coding: utf8 -*-
 
 import re
-from image import ImageSearch
-from taemin import plugin, database
-from schema_image import Image
+
+from taemin import database
+from taemin import plugin
+
+from .schema_image import Image
+from .image import ImageSearch
+
 
 class TaeminImage(plugin.TaeminPlugin):
     helper = {"donne": "Recherche sur google image",
@@ -112,5 +116,3 @@ def main():
 
 if __name__ == "__name__":
     main()
-
-
