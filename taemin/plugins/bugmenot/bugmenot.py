@@ -1,6 +1,6 @@
 """ Module to fetch shared login from bugmenot.com"""
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 import re
 from bs4 import BeautifulSoup
 import requests

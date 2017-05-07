@@ -16,10 +16,19 @@ from taemin import schema
 from taemin import conf
 from taemin import courriel
 from taemin import logger
+from taemin import sdnotify
 # from taemin import profile
+
+LINK_REGEX = re.compile(
+    r'((?:http)s?://'
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|)'
+    r'(?:/?|[/?]\S+))',
+    re.IGNORECASE
+)
 
 class Taemin(irc.bot.SingleServerIRCBot):
     def __init__(self, *args):
+        self.sd_notify = sdnotify.get_notifier()
         self.conf = conf.get_config("taemin")
         self.conf.load(*args)
 
@@ -37,8 +46,14 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
         irc.bot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
 
+        self.sd_notify.status("Load plugins...")
+
         self.plugins = self._get_plugins()
         self.user_init = {}
+
+    def start(self):
+        self.sd_notify.ready()
+        super().start()
 
     def on_welcome(self, serv, ev):
         query = schema.User.update(online=False)
@@ -219,7 +234,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
     @staticmethod
     def find_link(message):
-        m = re.search(r"""(https?://\S+)""", message)
+        m = LINK_REGEX.search(message)
         if not m:
             return None
 
@@ -241,11 +256,13 @@ class Taemin(irc.bot.SingleServerIRCBot):
         return key, value
 
     def reload_conf(self):
+        self.sd_notify.reloading()
         self.log.info("Reload configuration")
         self.conf.reload()
         self.reload_chans()
         self.plugins = self._get_plugins(True)
         self.log.info("Reload configuration done")
+        self.sd_notify.ready()
 
     def reload_chans(self):
         new_chans = self.conf.get("general", {}).get("chans")

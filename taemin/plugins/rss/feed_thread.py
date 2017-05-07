@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
 from threading import Thread
@@ -42,7 +42,7 @@ class FeedThread(Thread):
             if len(entries) > 5:
                 entries = entries[:5]
             for entry in entries:
-                self.callback(self, entry.get("title", "").encode("utf-8"), entry.get("link", "").encode("utf-8"))
+                self.callback(self, entry.get("title", ""), entry.get("link", ""))
             time.sleep(self.refresh)
 
 def main():

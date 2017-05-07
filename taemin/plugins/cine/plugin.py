@@ -293,14 +293,14 @@ class TaeminCine(plugin.TaeminPlugin):
 
             for meta in film.get("metadata", []):
                 if meta.get("property") == "director":
-                    director = meta.get("value", "").encode("utf-8")
+                    director = meta.get("value", "")
                 elif meta.get("property") == "productionyear":
-                    year = meta.get("value", "").encode("utf-8")
+                    year = meta.get("value", "")
 
             yield AlloFilm(film.get("id"),
-                           film.get("title2", "").encode("utf-8"),
+                           film.get("title2", ""),
                            year,
-                           film.get("poster", "").encode("utf-8"),
+                           film.get("poster", ""),
                            director)
 
     def get_localization(self, localization):
@@ -311,7 +311,7 @@ class TaeminCine(plugin.TaeminPlugin):
 
     def get_localizations(self, localization):
         try:
-            res = requests.get("http://www.allocine.fr/_/localization/%s" % urllib.quote(localization))
+            res = requests.get("http://www.allocine.fr/_/localization/%s" % urllib.parse.quote(localization))
         except requests.RequestException:
             return []
 
@@ -323,8 +323,8 @@ class TaeminCine(plugin.TaeminPlugin):
 
         for localization in raw_result:
             yield AlloLocalization(localization.get("id"),
-                                   localization.get("name", "").encode("utf-8"),
-                                   localization.get("zip_code", "").encode("utf-8"))
+                                   localization.get("name", ""),
+                                   localization.get("zip_code", ""))
 
     def get_seances(self, film, localization, version=None, day=None, quality=None, cine_id=None, page=1):
         if isinstance(film, str):
@@ -362,9 +362,9 @@ class TaeminCine(plugin.TaeminPlugin):
         for id_ac, theater in raw_result.get("theaters", {}).items():
             theaters[id_ac] = AlloCine(theater.get("id"),
                                        id_ac,
-                                       theater.get("name", "").encode("utf-8"),
-                                       "%s. %s" % (theater.get("address", {}).get("address", "").encode("utf-8"),
-                                                   theater.get("address", {}).get("city", "").encode("utf-8")))
+                                       theater.get("name", ""),
+                                       "%s. %s" % (theater.get("address", {}).get("address", ""),
+                                                   theater.get("address", {}).get("city", "")))
 
         for id_ac, showtimes in raw_result.get("showtimes", {}).items():
             for seance in self.parse_showtimes(showtimes, theaters[id_ac], film, localization):
@@ -374,8 +374,8 @@ class TaeminCine(plugin.TaeminPlugin):
         for dates in showtimes.values():
             for shows in dates.values():
                 for show in shows:
-                    version = show.get("version", "").encode("utf-8")
-                    quality = show.get("format", {}).get("name", "").encode("utf-8")
+                    version = show.get("version", "")
+                    quality = show.get("format", {}).get("name", "")
                     for s in show.get("showtimes", []):
                         yield AlloSeance(film=film,
                                          localization=localization,

@@ -17,7 +17,7 @@ class Synonymes(object):
     def off(cls, word):
         soup = cls._get_html(word)
 
-        return [s.getText().strip().encode("utf-8") for s in soup.select(cls.SELECTOR)]
+        return [s.getText().strip() for s in soup.select(cls.SELECTOR)]
 
     @classmethod
     def _get_html(cls, word):

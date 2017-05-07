@@ -1,11 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import errno
 import signal
 import select
-import irc.client
 import sys
+
+import irc.client
+
 from taemin import bot
 
 def reload_conf(signum, frame):
@@ -21,7 +23,7 @@ if __name__ == "__main__":
         if err.args[0] != errno.EINTR:
             raise
 
-    while(True):
+    while True:
         try:
             irc.client.SimpleIRCClient.start(bot)
         except select.error as err:

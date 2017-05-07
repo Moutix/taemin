@@ -81,6 +81,7 @@ class Link(database.db.basemodel):
     def get_head_dom(res):
         dom = []
         for line in res.iter_lines():
+            line = line.decode("utf-8")
             dom.append(line)
             if re.match(r".*</\s*head\s*>", line, flags=re.IGNORECASE):
                 break

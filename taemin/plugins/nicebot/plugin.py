@@ -17,6 +17,9 @@ class TaeminNiceBot(plugin.TaeminPlugin):
         chan = msg.chan.name
 
         for match in self.check_generator(msg.message):
+            if not match:
+                continue
+
             self.privmsg(chan, match)
             return
 
@@ -55,14 +58,14 @@ class TaeminNiceBot(plugin.TaeminPlugin):
         if not title:
             return None
 
-        return title.string.strip().encode("utf-8")
+        return title.string.strip()
 
     def get_youtube_user(self, html):
         user = html.select("div.yt-user-info a.yt-uix-sessionlink")
         if not user:
             return None
 
-        return user[0].string.strip().encode("utf-8")
+        return user[0].string.strip()
 
 def main():
     nice = TaeminNiceBot(None)

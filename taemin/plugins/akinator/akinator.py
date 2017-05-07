@@ -37,7 +37,7 @@ class Akinator(object):
         if not self.question:
             raise AkinatorError()
 
-        self.question = self.question.encode("utf-8")
+        self.question = self.question
         self.step = int(step_info.get("step"))
         self.progression = float(step_info.get("progression", "0.0"))
 
@@ -52,9 +52,9 @@ class Akinator(object):
         params = {"session": self.session, "signature": self.signature, "step": self.step}
         res = self.requests("list", params=params)
         result = res.get("parameters", {}).get("elements", [])[0].get("element", {})
-        self.name = result.get("name", "").encode("utf-8")
-        self.description = result.get("description", "").encode("utf-8")
-        self.image = result.get("absolute_picture_path", "").encode("utf-8")
+        self.name = result.get("name", "")
+        self.description = result.get("description", "")
+        self.image = result.get("absolute_picture_path", "")
 
 def main():
     akinator = Akinator()
