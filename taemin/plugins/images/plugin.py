@@ -28,7 +28,10 @@ class TaeminImage(plugin.TaeminPlugin):
 
         if msg.key == "donne" or msg.key == "give":
             self.image.search(msg.value)
-            self.privmsg(chan, self.image.tiny)
+            if self.image.html:
+                self.privmsg(chan, self.image.tiny)
+            else:
+                self.taemin.log.error("Image error: %s" % self.image.tiny)
             return
 
         if msg.key == "keep":
@@ -66,17 +69,20 @@ class TaeminImage(plugin.TaeminPlugin):
 
             self.privmsg(chan, "Image supprimé: [#%s: %s] %s" % (image.id, image.name, image.image))
 
-
         for word in self.confimage.keys():
             if re.compile("^.*" + word + ".*$").match(msg.message.lower()):
                 self.image.search(self.confimage[word])
-                self.privmsg(chan, self.image.tiny)
+                if self.image.html:
+                    self.privmsg(chan, self.image.tiny)
+                else:
+                    self.taemin.log.error("Image error: %s" % self.image.tiny)
 
     def on_privmsg(self, msg):
         source = msg.user.name
 
         if msg.key == "donne" or msg.key == "give":
             self.image.search(msg.value)
+
             self.privmsg(source, self.image.tiny)
 
         for word in self.confimage.keys():
