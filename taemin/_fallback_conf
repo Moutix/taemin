@@ -48,6 +48,7 @@ plugins:
   plugins.shareim.plugin: "TaeminShareIm"
   plugins.rtd.plugin: "TaeminRTD"
   plugins.quizz.plugin: "TaeminQuizz"
+  plugins.kimsuffi.plugin: "TaeminKimsuffi"
 
 
 ImageSearch:
