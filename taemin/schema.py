@@ -5,7 +5,7 @@ import re
 import datetime
 import requests
 
-from playhouse.fields import ManyToManyField, AESEncryptedField
+from playhouse.fields import ManyToManyField
 from peewee import *
 from bs4 import BeautifulSoup, SoupStrainer
 

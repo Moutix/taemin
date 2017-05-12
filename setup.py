@@ -47,7 +47,6 @@ setup(
         'irc',
         'peewee',
         'bs4',
-        'pycrypto',
         'feedparser',
         'requests',
         'romkan',
