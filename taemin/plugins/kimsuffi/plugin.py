@@ -22,9 +22,11 @@ class KimsuffiSearch(Thread):
         self.model = model
 
         self._state_available = False
+        self._continue = False
 
     def run(self):
-        while True:
+        self._continue = True
+        while self._continue:
             available = self.get_server_availability(model=self.model)
             if self._state_available != available:
                 self.callback(available)
@@ -63,6 +65,9 @@ class KimsuffiSearch(Thread):
 
         return False
 
+    def stop(self):
+        self._continue = False
+
 
 class TaeminKimsuffi(plugin.TaeminPlugin):
     helper = {}
@@ -71,7 +76,13 @@ class TaeminKimsuffi(plugin.TaeminPlugin):
 
     def __init__(self, taemin):
         super().__init__(taemin)
-        KimsuffiSearch(callback=self.on_new_availability, refresh=20).start()
+        self.thread = KimsuffiSearch(callback=self.on_new_availability, refresh=20)
+
+    def start(self):
+        self.thread.start()
+
+    def stop(self):
+        self.thread.stop()
 
     def on_new_availability(self, available):
         """ Each time we found a new kimsuffi server """

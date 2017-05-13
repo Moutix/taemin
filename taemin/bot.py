@@ -51,7 +51,16 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
     def start(self):
         self.sd_notify.ready()
+        for plugin in self.plugins:
+            plugin.start()
+
         super().start()
+
+    def stop(self):
+        """ Stop all runnign thread """
+
+        for plugin in self.plugins:
+            plugin.stop()
 
     def on_welcome(self, serv, ev):
         query = schema.User.update(online=False)
@@ -259,6 +268,9 @@ class Taemin(irc.bot.SingleServerIRCBot):
         self.conf.reload()
         self.reload_chans()
         self.plugins = self._get_plugins(True)
+        for plugin in self.plugins:
+            plugin.start()
+
         self.log.info("Reload configuration done")
         self.sd_notify.ready()
 

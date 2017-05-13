@@ -7,6 +7,12 @@ class TaeminPlugin(object):
     def __init__(self, taemin):
         self.taemin = taemin
 
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
+
     def on_join(self, connection):
         pass
 

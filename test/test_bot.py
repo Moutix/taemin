@@ -1,6 +1,7 @@
 """ Test taemin bot """
 
 import unittest
+import threading
 
 from taemin import bot
 

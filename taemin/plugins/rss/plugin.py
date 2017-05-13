@@ -24,8 +24,13 @@ class TaeminRSS(plugin.TaeminPlugin):
         for feed in Feed.select().where(Feed.conf == False):
             self.feeds.append(FeedThread(feed.url, self.on_newfeed, name=feed.name))
 
+    def start(self):
         for feed in self.feeds:
             feed.start()
+
+    def stop(self):
+        for feed in self.feeds:
+            feed.stop()
 
     def on_pubmsg(self, msg):
         return

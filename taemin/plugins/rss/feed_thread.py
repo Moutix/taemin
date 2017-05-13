@@ -14,6 +14,7 @@ class FeedThread(Thread):
         self.callback = callback
         self.regex = regex
         self.refresh = refresh
+        self._continue = False
 
     def get_feeds(self):
         feeds = feedparser.parse(self.rss)
@@ -36,14 +37,19 @@ class FeedThread(Thread):
         return entries
 
     def run(self):
+        self._continue = True
+
         time.sleep(2)
-        while True:
+        while self._continue:
             entries = self.get_entries()
             if len(entries) > 5:
                 entries = entries[:5]
             for entry in entries:
                 self.callback(self, entry.get("title", ""), entry.get("link", ""))
             time.sleep(self.refresh)
+
+    def stop(self):
+        self._continue = False
 
 def main():
     def callback(feed, title, link):
