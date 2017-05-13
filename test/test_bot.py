@@ -11,4 +11,4 @@ class BotTest(unittest.TestCase):
         """ Test intialize the bot """
 
         taemin = bot.Taemin()
-        self.assertIsNone(taemin.plugins)
+        self.assertIsNotNone(taemin.plugins)
