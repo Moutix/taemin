@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 import taemin
 
 for filename in glob.glob("cfg/*.yml*"):
-    shutil.copy(filename, "smserver/_fallback_conf")
+    shutil.copy(filename, "taemin/_fallback_conf")
 
 CONF_DIR = None
 

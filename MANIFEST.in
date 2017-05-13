@@ -1,5 +1,5 @@
 include *.md
-recursive-include taemin *
 include smserver/_fallback_conf/*.yml*
 include cfg/*.yml*
 include scripts/*
+recursive-include taemin *
