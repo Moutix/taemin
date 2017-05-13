@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 
 import taemin
 
-for filename in glob.glob("cfg/*.yml*"):
+for filename in glob.glob("conf/*.yml*"):
     shutil.copy(filename, "taemin/_fallback_conf")
 
 CONF_DIR = None

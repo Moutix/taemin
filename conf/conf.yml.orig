@@ -5,6 +5,8 @@ general:
   port: 6667
   chans:
     - "#miku"
+  log_file: taemin.log
+
 
 mails:
   pseudo: email@example.fr
