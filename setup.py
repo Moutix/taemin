@@ -63,6 +63,7 @@ setup(
         'feedparser',
         'requests',
         'romkan',
+        'yaml',
     ],
 
     url='http://github.com/ningirsu/taemin',
