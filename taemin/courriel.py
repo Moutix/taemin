@@ -85,6 +85,8 @@ class Mailage:
         delete.execute()
         for pseudo, mail in self.bot.conf.get("mails", {}).items():
             user = self.get_user(pseudo)
+            if not user:
+                continue
             schema.Mail.create(user=user, mail=mail)
         return
 
