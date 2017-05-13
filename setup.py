@@ -10,13 +10,26 @@ from setuptools import setup, find_packages
 
 import taemin
 
-for filename in glob.glob("conf/*.yml*"):
-    shutil.copy(filename, "taemin/_fallback_conf")
+for filename in glob.glob("cfg/*.yml*"):
+    shutil.copy(filename, "smserver/_fallback_conf")
 
-if os.path.splitdrive(sys.executable)[0] == "":
-    conf_dir = "/etc/taemin"
-else:
-    conf_dir = "conf"
+CONF_DIR = None
+
+if os.path.splitdrive(sys.executable)[0] != "":
+    CONF_DIR = "conf"
+
+if not CONF_DIR and os.path.isdir("/etc/taemin"):
+    CONF_DIR = "/etc/taemin"
+
+if not CONF_DIR:
+    try:
+        os.mkdir("/etc/taemin")
+        CONF_DIR = "/etc/taemin"
+    except:
+        pass
+
+if not CONF_DIR:
+    CONF_DIR = "conf"
 
 setup(
     name='taemin',
@@ -58,5 +71,5 @@ setup(
 
     scripts=["scripts/taemin"],
 
-    data_files=[(conf_dir, ['conf/conf.yml.orig'])],
+    data_files=[(CONF_DIR, ['conf/conf.yml.orig'])],
 )
