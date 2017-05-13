@@ -59,7 +59,7 @@ class Link(database.db.basemodel):
 
         try:
             res = requests.get(url, stream=True, timeout=5)
-        except requests.RequestException:
+        except (requests.RequestException, UnicodeError):
             return None, None, None
 
         if "content-type" in res.headers:
@@ -120,7 +120,7 @@ class Link(database.db.basemodel):
         if not title.string:
             return None
 
-        return title.string.strip().replace('\n', ' ').encode("utf-8")
+        return title.string.strip().replace('\n', ' ')
 
 
 class Connection(database.db.basemodel):

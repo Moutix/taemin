@@ -20,9 +20,7 @@ from taemin import sdnotify
 # from taemin import profile
 
 LINK_REGEX = re.compile(
-    r'((?:http)s?://'
-    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|)'
-    r'(?:/?|[/?]\S+))',
+    r'(https?://\S+\.\S+)',
     re.IGNORECASE
 )
 
