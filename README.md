@@ -1,7 +1,11 @@
+
 # Taemin
+
 A beautiful IRC bot
 
-##Setup
+[![Build Status](https://travis-ci.org/ningirsu/taemin.svg?branch=master)](https://travis-ci.org/ningirsu/taemin)
+
+## Setup
 
 The usual way:
 
@@ -23,13 +27,13 @@ Then run:
 
     service taemin start
     
-##Configuration
+## Configuration
 
 To adjust the configuration of taemin, just edit the configuration file:
 
     vim /etc/taemin/taemin.yml
 
-##Contribute
+## Contribute
 
 To add a plugin, just copy the example folder:
 
