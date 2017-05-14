@@ -51,6 +51,7 @@ plugins:
   plugins.rtd.plugin: "TaeminRTD"
   plugins.quizz.plugin: "TaeminQuizz"
   plugins.kimsuffi.plugin: "TaeminKimsuffi"
+  plugins.morpion.plugin: "TaeminMorpion"
 
 
 ImageSearch:
