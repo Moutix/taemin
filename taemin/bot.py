@@ -51,9 +51,6 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
     def start(self):
         self.sd_notify.ready()
-        for plugin in self.plugins:
-            plugin.start()
-
         super().start()
 
     def stop(self):
@@ -65,10 +62,12 @@ class Taemin(irc.bot.SingleServerIRCBot):
     def on_welcome(self, serv, ev):
         query = schema.User.update(online=False)
         query.execute()
-
         for chan in self.chans:
             serv.join(chan)
             self.user_init[chan] = False
+
+        for plugin in self.plugins:
+            plugin.start()
 
     def on_join(self, serv, ev):
         source = self.get_nickname(ev.source.nick)
@@ -265,6 +264,10 @@ class Taemin(irc.bot.SingleServerIRCBot):
     def reload_conf(self):
         self.sd_notify.reloading()
         self.log.info("Reload configuration")
+
+        for plugin in self.plugins:
+            plugin.stop()
+
         self.conf.reload()
         self.reload_chans()
         self.plugins = self._get_plugins(True)
