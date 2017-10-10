@@ -6,7 +6,7 @@ general:
   chans:
     - "#miku"
   log_file: taemin.log
-
+  tls: false
 
 mails:
   pseudo: email@example.fr

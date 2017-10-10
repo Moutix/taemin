@@ -6,6 +6,8 @@ import threading
 
 import irc.bot
 import irc.client
+import irc.connection
+import ssl
 
 try:
     from importlib import reload
@@ -38,11 +40,17 @@ class Taemin(irc.bot.SingleServerIRCBot):
         self.desc = general_conf.get("desc", "Le Splendide")
         self.server = general_conf.get("server", "")
         self.port = general_conf.get("port", 6667)
+        self.tls = general_conf.get("tls", False)
 
         self.log = logger.Logger()
         self.mailation = courriel.Mailage(self)
 
-        irc.bot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc)
+        if self.tls == True:
+            ssl_factory = irc.connection.Factory(wrapper=ssl.wrap_socket)
+        else:
+            ssl_factory = irc.connection.Factory()
+
+        irc.bot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc, connect_factory=ssl_factory)
 
         self.sd_notify.status("Load plugins...")
 
