@@ -19,6 +19,7 @@ from taemin import conf
 from taemin import courriel
 from taemin import logger
 from taemin import sdnotify
+from .http_api_thread import HttpApiThread
 # from taemin import profile
 
 LINK_REGEX = re.compile(
@@ -48,6 +49,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
         if self.http_api:
             self.httpApiThread = HttpApiThread()
+            print("http_api thread created")
             self.endpoints = []
 
         if self.tls:
@@ -81,7 +83,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
         for plugin in self.plugins:
             if self.http_api:
-                endpoints.append(plugin.expose_endpoints())
+                self.endpoints += (plugin.expose_endpoints())
             plugin.start()
 
         if self.http_api:

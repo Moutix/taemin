@@ -17,6 +17,7 @@ class HttpApiThread(Thread):
         """Loads the endpoints in the Flask app. Needed befor exposition"""
         for endpoint in self.endpoints:
             full_route = endpoint.generate_route()
+            print(full_route)
             endpoint.callback = self.app.route(full_route, methods=endpoint.methods)(endpoint.callback)
 
     def set_endpoints(self, endpoints):
