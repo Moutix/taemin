@@ -5,9 +5,9 @@ from threading import Thread
 from flask import Flask
 
 class HttpApiThread(Thread):
-    def __init__(self, endpoints):
+    def __init__(self):
         Thread.__init__(self)
-        self.endpoints = endpoints
+        self.endpoints = []
         self._continue = False
         self.app = Flask(__name__)
 
@@ -27,13 +27,3 @@ class HttpApiThread(Thread):
 
     def stop(self):
         self._continue = False
-
-class HttpApiEndpoint():
-    def __init__(self, plugin, route, callback, methods=['GET']):
-        self.plugin = plugin
-        self.route = route
-        self.callback = callback
-        self.methods = methods
-
-    def generate_route(self):
-        return('/' + self.plugin + '/' + self.route)

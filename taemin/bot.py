@@ -41,11 +41,16 @@ class Taemin(irc.bot.SingleServerIRCBot):
         self.server = general_conf.get("server", "")
         self.port = general_conf.get("port", 6667)
         self.tls = general_conf.get("tls", False)
+        self.http_api = general_conf.get("enable_http_api", False)
 
         self.log = logger.Logger()
         self.mailation = courriel.Mailage(self)
 
-        if self.tls == True:
+        if self.http_api:
+            self.httpApiThread = HttpApiThread()
+            self.endpoints = []
+
+        if self.tls:
             ssl_factory = irc.connection.Factory(wrapper=ssl.wrap_socket)
         else:
             ssl_factory = irc.connection.Factory()
@@ -75,7 +80,15 @@ class Taemin(irc.bot.SingleServerIRCBot):
             self.user_init[chan] = False
 
         for plugin in self.plugins:
+            if self.http_api:
+                endpoints.append(plugin.expose_endpoints())
             plugin.start()
+
+        if self.http_api:
+            self.httpApiThread.set_endpoints(self.endpoints)
+            self.httpApiThread.update_app()
+            self.httpApiThread.run()
+
 
     def on_join(self, serv, ev):
         source = self.get_nickname(ev.source.nick)
