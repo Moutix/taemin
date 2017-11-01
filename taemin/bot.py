@@ -49,7 +49,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
         if self.http_api:
             self.httpApiThread = HttpApiThread()
-            print("http_api thread created")
+            self.log.info("http_api thread created")
             self.endpoints = []
 
         if self.tls:

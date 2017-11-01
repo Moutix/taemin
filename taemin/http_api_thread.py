@@ -3,6 +3,7 @@
 
 from threading import Thread
 from flask import Flask
+from taemin import logger
 
 class HttpApiThread(Thread):
     """Thread which exposes plugins' HTTP API."""
@@ -12,12 +13,13 @@ class HttpApiThread(Thread):
         self.endpoints = []
         self._continue = False
         self.app = Flask(__name__)
+        self.log = logger.Logger()
 
     def update_app(self):
         """Loads the endpoints in the Flask app. Needed befor exposition"""
         for endpoint in self.endpoints:
             full_route = endpoint.generate_route()
-            print(full_route)
+            self.log.debug("Route %s loaded" % full_route)
             endpoint.callback = self.app.route(full_route, methods=endpoint.methods)(endpoint.callback)
 
     def set_endpoints(self, endpoints):
