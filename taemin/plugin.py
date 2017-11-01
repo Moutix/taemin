@@ -39,4 +39,5 @@ class TaeminPlugin(object):
         self.taemin.connection.privmsg(chan, msg)
 
     def expose_endpoints(self):
+        """ Returns a list of all the endpoints the plugin wants to expose """
         return []
