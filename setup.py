@@ -65,6 +65,7 @@ setup(
         'romkan',
         'pyyaml',
         'flask',
+        'gevent',
     ],
 
     url='http://github.com/ningirsu/taemin',

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
+from gevent.wsgi import WSGIServer
 from threading import Thread
 from flask import Flask
 from taemin import logger
@@ -27,10 +28,11 @@ class HttpApiThread(Thread):
         self.endpoints = endpoints
 
     def run(self):
-        """Some gevent black magic to expose the app"""
+        """Some gevent black magic to expose the API"""
         self._continue = True
-        self.app.run()
+        self.http_server = WSGIServer(('', 5000), self.app, log=self.log)
+        self.http_server.serve_forever()
 
     def stop(self):
         """Stops the HTTP API worker"""
-        self._continue = False
+        self.http_server.stop()
