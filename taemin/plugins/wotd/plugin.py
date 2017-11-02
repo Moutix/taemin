@@ -25,6 +25,7 @@ class WOTDCron(threading.Thread):
 
         while self._continue:
             if datetime.datetime.now().hour != self.wotd_plugin.hour:
+                time.sleep(60)
                 continue
 
             self.wotd_plugin.send_word()
