@@ -62,7 +62,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
         super().start()
 
     def stop(self):
-        """ Stop all runnign thread """
+        """ Stop all running thread """
 
         for plugin in self.plugins:
             plugin.stop()
@@ -76,6 +76,11 @@ class Taemin(irc.bot.SingleServerIRCBot):
 
         for plugin in self.plugins:
             plugin.start()
+
+    def on_disconnect(self, serv, ev):
+        """ When the connection with the socket is closed """
+
+        self.stop()
 
     def on_join(self, serv, ev):
         source = self.get_nickname(ev.source.nick)
