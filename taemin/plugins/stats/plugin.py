@@ -19,7 +19,7 @@ class TaeminStats(plugin.TaeminPlugin):
         self.privmsg(
             msg.chan.name,
             ', '.join(
-                "%s: %s" % (user.name, user.nb_messages)
+                "%s: %s (%s)" % (user.name, user.nb_messages, user.avg_messages)
                 for user in users
             )
         )
@@ -54,11 +54,16 @@ class TaeminStats(plugin.TaeminPlugin):
             query.append(schema.Message.chan == chan)
 
         result = (schema.User
-                  .select(schema.User.name, fn.COUNT(schema.Message.id).alias("nb_messages"))
+                  .select(
+                      schema.User.name,
+                      fn.COUNT(schema.Message.id).alias("nb_messages"),
+                      fn.AVG(fn.Length(schema.Message.message)).alias("avg_messages"),
+                      fn.SUM(fn.Length(schema.Message.message)).alias("len_messages"),
+                  )
                   .join(schema.Message, JOIN.LEFT_OUTER)
                   .where(*query)
                   .group_by(schema.User.name)
-                  .order_by(fn.COUNT(schema.Message.id).desc()))
+                  .order_by(fn.SUM(fn.Length(schema.Message.message)).desc()))
 
         if limit:
             result.limit(limit)
