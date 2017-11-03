@@ -88,9 +88,9 @@ class TaeminKimsuffi(plugin.TaeminPlugin):
         """ Each time we found a new kimsuffi server """
 
         if available:
-            msg = "Server %s is now available here %s" % (self.MODEL, URL)
+            msg = "Server %s is available here %s" % (self.MODEL, URL)
         else:
-            msg = "Server %s is now more available here %s" % (self.MODEL, URL)
+            msg = "Server %s is no more available here %s" % (self.MODEL, URL)
 
         for chan in self.taemin.chans:
             self.privmsg(chan, msg)

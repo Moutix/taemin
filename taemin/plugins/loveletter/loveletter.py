@@ -274,7 +274,7 @@ class LoveLetter(object):
     def print_state(self):
         msg = "Partie avec : %s\n" % str(self.turn)
         if not self.started:
-            msg += "Partie pas encore commencé"
+            msg += "Partie pas encore commencée"
         elif self.winner:
             msg += "Partie gagné par %s" % self.winner.name
         else:

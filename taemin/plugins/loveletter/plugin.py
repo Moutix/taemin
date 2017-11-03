@@ -1,6 +1,3 @@
-#!/usr/bin/env python2
-# -*- coding: utf8 -*-
-
 from .loveletter import LoveLetter
 from taemin import plugin
 
