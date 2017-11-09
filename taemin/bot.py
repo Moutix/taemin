@@ -75,6 +75,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
             self.user_init[chan] = False
 
         for plugin in self.plugins:
+            plugin.stop() # Be sure the plugin is stop before start
             plugin.start()
 
     def on_disconnect(self, serv, ev):
