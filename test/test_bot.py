@@ -1,15 +1,11 @@
 """ Test taemin bot """
 
-import unittest
-import threading
+from test import utils
 
-from taemin import bot
-
-class BotTest(unittest.TestCase):
+class BotTest(utils.TaeminTest):
     """ Test the bot class """
 
     def test_initialize(self):
         """ Test intialize the bot """
 
-        taemin = bot.Taemin()
-        self.assertIsNotNone(taemin.plugins)
+        self.assertIsNotNone(self.taemin.plugins)

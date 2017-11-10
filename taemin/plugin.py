@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf8 -*-
+""" Base class for all taemin plugin """
 
 class TaeminPlugin(object):
     helper = {}
@@ -30,6 +29,9 @@ class TaeminPlugin(object):
 
     def privmsg(self, chan, msg):
         """ Send a message to a chan or an user """
+
+        if not isinstance(msg, str):
+            msg = msg.decode("utf-8")
 
         if chan in self.taemin.chans:
             self.taemin.create_pub_message(self.taemin.name, chan, msg)

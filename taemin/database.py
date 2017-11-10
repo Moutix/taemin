@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf8 -*-
+""" Database model """
 
 from peewee import *
 from taemin import conf
@@ -30,7 +29,7 @@ class DataBase(object):
     @classmethod
     def new_from_conf(cls):
         db_conf = conf.get_config("taemin").get("database", {})
-        return cls(db_conf.get("type", "mysql"),
+        return cls(db_conf.get("type", "sqlite"),
                    name=db_conf.get("name", "/etc/taemin/taemin.db"),
                    user=db_conf.get("user", ""),
                    password=db_conf.get("password", ""),

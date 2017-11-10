@@ -1,0 +1,94 @@
+general:
+  name: Taemin
+  desc: Le Magnifique
+  server: irc.larez.fr
+  port: 6667
+  chans:
+    - "#miku"
+  log_file: taemin.log
+  tls: false
+
+mails:
+  pseudo: email@example.fr
+
+Mail_conf:
+  port: 25
+  server: localhost
+
+database:
+  # type can be sqlite, mysql or pgsql
+  type: memory
+  host: localhost
+  name:
+  user:
+  password:
+
+plugins:
+  plugins.images.plugin: "TaeminImage"
+  plugins.pendu.plugin: "TaeminPendu"
+  plugins.singe.plugin: "TaeminSinge"
+  plugins.loveletter.plugin: "TaeminLoveLetter"
+  plugins.cafe.plugin: "TaeminCafe"
+  plugins.ascii.plugin: "TaeminAscii"
+  plugins.sayno.plugin: "TaeminSayNo"
+  plugins.trad.plugin: "TaeminTrad"
+  plugins.trans.plugin: "TaeminTrans"
+  plugins.timer.plugin: "TaeminTimer"
+  plugins.memory.plugin: "TaeminMemory"
+  plugins.compliments.plugin: "TaeminCompliments"
+  plugins.quotation.plugin: "TaeminQuotation"
+  plugins.akinator.plugin: "TaeminAkinator"
+  plugins.nicebot.plugin: "TaeminNiceBot"
+  plugins.cine.plugin: "TaeminCine"
+  plugins.pause.plugin: "TaeminPause"
+  plugins.dico.plugin: "TaeminDico"
+  plugins.synonymes.plugin: "TaeminSynonymes"
+  plugins.save.plugin: "TaeminSave"
+  plugins.shifumi.plugin: "TaeminShifumi"
+  plugins.todo.plugin: "TaeminTodo"
+  plugins.shareim.plugin: "TaeminShareIm"
+  plugins.rtd.plugin: "TaeminRTD"
+  plugins.quizz.plugin: "TaeminQuizz"
+  plugins.kimsuffi.plugin: "TaeminKimsuffi"
+  plugins.morpion.plugin: "TaeminMorpion"
+
+
+ImageSearch:
+  taemin:
+    - taemin
+    - ji chang wook
+    - Onew
+    - Jong Hyun
+    - Minho
+    - Key shinee
+    - shinee
+  faim:
+    - okonomiyaki
+    - sushi
+
+googleApi:
+  APIKEY: "apikey"
+  CX: "cx"
+
+SayNo:
+  non_keyword:
+    - "word"
+  non_nick:
+    - "yournick"
+
+Compliments:
+  com_keyword:
+    - "s hi"
+    - "t gr"
+    - "ing "
+    - "ooo"
+    - "aaaa"
+    - "Schnif"
+  compliments:
+    - "Tu es un papillon"
+    - "Tu es ma lumière"
+    - "Je te dévouerai mon âme"
+
+RSS:
+  SHINeeFrance:
+    url: "http://shineefrance.net/site/feed/"

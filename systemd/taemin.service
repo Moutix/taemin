@@ -8,6 +8,8 @@ ExecStart=/usr/local/bin/taemin
 ExecReload=/bin/kill -HUP $MAINPID
 User=taemin
 TimeoutStopSec=3
+Restart=always
 
 [Install]
 Alias=taemin
+WantedBy=multi-user.target
