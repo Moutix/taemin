@@ -4,12 +4,15 @@
 import re
 import datetime
 import requests
+import logging
 
 from playhouse.fields import ManyToManyField
 from peewee import *
 from bs4 import BeautifulSoup, SoupStrainer
 
 from taemin import database, conf
+
+LOGGER = logging.getLogger(__name__)
 
 
 class Chan(database.db.basemodel):
@@ -43,7 +46,12 @@ class Link(database.db.basemodel):
         except cls.DoesNotExist:
             pass
 
-        return cls.create(url=true_url, title=title, type=content_type)
+        try:
+            return cls.create(url=true_url, title=title, type=content_type)
+        except:
+            LOGGER.exception("cannot save link from url %s with title %s", url, title)
+
+        return None
 
     @classmethod
     def info_from_url(cls, url):
