@@ -68,7 +68,8 @@ class TaeminLOTD(plugin.TaeminPlugin):
                 schema.Link
                 .select()
                 .where(
-                    (schema.Link.created_at > datetime.datetime.utcnow() - datetime.timedelta(days=1))
+                    (schema.Link.created_at > datetime.datetime.utcnow() - datetime.timedelta(hours=23)),
+                    (schema.Link.created_at < datetime.datetime.utcnow() - datetime.timedelta(minutes=10)),
                 )
             )
             if not links:
