@@ -31,6 +31,16 @@ class TaeminPlugin(object):
     def on_part(self, connection):
         pass
 
+    def kick(self, chan, nick, comment=""):
+        if not nick:
+            return
+
+        if not isinstance(nick, str):
+            nick = nick.decode("utf-8")
+
+        if chan in self.taemin.chans:
+            self.taemin.connection.kick(chan, nick, comment)
+
     def privmsg(self, chan, msg):
         """ Send a message to a chan or an user """
 
