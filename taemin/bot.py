@@ -1,14 +1,14 @@
 """ Main bot file """
 
-import re
 import datetime
+import re
+import ssl
 import time
 import threading
 
 import irc.bot
 import irc.client
 import irc.connection
-import ssl
 
 try:
     from importlib import reload
