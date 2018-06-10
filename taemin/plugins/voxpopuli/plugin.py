@@ -108,6 +108,9 @@ class VoxWait(VoxState):
         except ValueError:
             duration = int(float(VoxState._default_values["duration"]))
 
+        if duration < 5:
+            duration = int(float(VoxState._default_values["duration"]))
+
         return self.fork(VoxVote, nick, duration)
 
 
