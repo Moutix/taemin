@@ -6,8 +6,7 @@ import datetime
 import requests
 import logging
 
-from playhouse.fields import ManyToManyField
-from peewee import *
+import peewee
 from bs4 import BeautifulSoup, SoupStrainer
 
 from taemin import database, conf
@@ -16,20 +15,20 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Chan(database.db.basemodel):
-    name = CharField()
-    created_at = DateTimeField(default=datetime.datetime.now)
+    name = peewee.CharField()
+    created_at = peewee.DateTimeField(default=datetime.datetime.now)
 
 class User(database.db.basemodel):
-    name = CharField()
-    online = BooleanField(default=True)
-    created_at = DateTimeField(default=datetime.datetime.now)
+    name = peewee.CharField()
+    online = peewee.BooleanField(default=True)
+    created_at = peewee.DateTimeField(default=datetime.datetime.now)
 
 class Link(database.db.basemodel):
-    url = TextField()
-    title = TextField(null=True)
-    type = TextField(null=True)
-    tags = TextField(null=True)
-    created_at = DateTimeField(default=datetime.datetime.now)
+    url = peewee.TextField()
+    title = peewee.TextField(null=True)
+    type = peewee.TextField(null=True)
+    tags = peewee.TextField(null=True)
+    created_at = peewee.DateTimeField(default=datetime.datetime.now)
 
     @classmethod
     def new_from_url(cls, url):
@@ -134,29 +133,29 @@ class Link(database.db.basemodel):
 
 
 class Connection(database.db.basemodel):
-    user = ForeignKeyField(User, related_name='connections')
-    chan = ForeignKeyField(Chan, related_name='connections')
-    connected_at = DateTimeField(default=datetime.datetime.now)
-    disconnected_at = DateTimeField(default=datetime.datetime.now)
-    created_at = DateTimeField(default=datetime.datetime.now)
+    user = peewee.ForeignKeyField(User, related_name='connections')
+    chan = peewee.ForeignKeyField(Chan, related_name='connections')
+    connected_at = peewee.DateTimeField(default=datetime.datetime.now)
+    disconnected_at = peewee.DateTimeField(default=datetime.datetime.now)
+    created_at = peewee.DateTimeField(default=datetime.datetime.now)
 
 class Message(database.db.basemodel):
-    user = ForeignKeyField(User, related_name='messages')
+    user = peewee.ForeignKeyField(User, related_name='messages')
     #message = AESEncryptedField(conf.get_config("taemin").get("aes_password", "banane").encode("utf-8"))
-    message = TextField()
-    key = TextField(null=True)
-    value = TextField(null=True)
-    target = TextField(null=True)
-    chan = ForeignKeyField(Chan, related_name='messages', null=True)
-    link = ForeignKeyField(Link, related_name='messages', null=True, on_delete='SET NULL')
-    highlights = ManyToManyField(User, related_name='hl')
+    message = peewee.TextField()
+    key = peewee.TextField(null=True)
+    value = peewee.TextField(null=True)
+    target = peewee.TextField(null=True)
+    chan = peewee.ForeignKeyField(Chan, related_name='messages', null=True)
+    link = peewee.ForeignKeyField(Link, related_name='messages', null=True, on_delete='SET NULL')
+    highlights = peewee.ManyToManyField(User, backref='hl')
 
-    created_at = DateTimeField(default=datetime.datetime.now)
+    created_at = peewee.DateTimeField(default=datetime.datetime.now)
 
 class Mail(database.db.basemodel):
-    user = ForeignKeyField(User, related_name='mail')
-    mail = TextField()
-    created_at = DateTimeField(default=datetime.datetime.now)
+    user = peewee.ForeignKeyField(User, related_name='mail')
+    mail = peewee.TextField()
+    created_at = peewee.DateTimeField(default=datetime.datetime.now)
 
 User.create_table(True)
 Chan.create_table(True)

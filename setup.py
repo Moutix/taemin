@@ -58,7 +58,7 @@ setup(
 
     install_requires=[
         'irc',
-        'peewee',
+        'peewee>=3.0',
         'bs4',
         'feedparser',
         'requests',
