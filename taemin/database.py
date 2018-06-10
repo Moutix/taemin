@@ -1,11 +1,8 @@
 """ Database model """
 
-from peewee import *
-from taemin import conf
-from playhouse.shortcuts import RetryOperationalError
+import peewee
 
-class MySQLDB(RetryOperationalError, MySQLDatabase):
-    pass
+from taemin import conf
 
 class DataBase(object):
     def __init__(self, type_, name, user="", password="", host="localhost", port=3306):
@@ -16,15 +13,15 @@ class DataBase(object):
         self.host = host
         self.port = port
         self.db = self.init_db()
-        class BaseModel(Model):
+        class BaseModel(peewee.Model):
             class Meta:
                 database = self.db
         self.basemodel = BaseModel
 
         if self.type_ == "mysql":
-            self.random_func = fn.Rand
+            self.random_func = peewee.fn.Rand
         else:
-            self.random_func = fn.Random
+            self.random_func = peewee.fn.Random
 
     @classmethod
     def new_from_conf(cls):
@@ -44,16 +41,16 @@ class DataBase(object):
         return available_db.get(self.type_, self._default_db)()
 
     def _sqlite_db(self):
-        return SqliteDatabase(self.name)
+        return peewee.SqliteDatabase(self.name)
 
     def _postgre_db(self):
-        return PostgresqlDatabase(self.name, user=self.user, password=self.password, host=self.host)
+        return peewee.PostgresqlDatabase(self.name, user=self.user, password=self.password, host=self.host)
 
     def _mysql_db(self):
-        return MySQLDB(self.name, user=self.user, passwd=self.password, host=self.host, port=self.port)
+        return peewee.MySQLDatabase(self.name, user=self.user, passwd=self.password, host=self.host, port=self.port)
 
     def _default_db(self):
-        return SqliteDatabase(":memory")
+        return peewee.SqliteDatabase(":memory")
 
 db = DataBase.new_from_conf()
 
