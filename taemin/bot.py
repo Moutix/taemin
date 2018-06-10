@@ -68,7 +68,17 @@ class Taemin(irc.bot.SingleServerIRCBot):
         for plugin in self.plugins:
             plugin.stop()
 
+    def _nickserv_register(self):
+        """Register the pseudo with nickserv"""
+        password = self.conf.get("general", {}).get("nickserv", {}).get("pass")
+        if not password:
+            return
+
+        self.connection.privmsg("NickServ", "IDENTIFY {}".format(password))
+
     def on_welcome(self, serv, ev):
+        self._nickserv_register()
+
         query = schema.User.update(online=False)
         query.execute()
         for chan in self.chans:
