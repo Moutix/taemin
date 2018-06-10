@@ -2,6 +2,7 @@
 
 import re
 import datetime
+import time
 import threading
 
 import irc.bot
@@ -136,6 +137,14 @@ class Taemin(irc.bot.SingleServerIRCBot):
         user = self.disconnect_user(name)
 
         self.safe_load_plugin("on_quit", user)
+
+    def on_kick(self, serv, ev):
+        nick = ev.arguments[0]
+        channel = ev.target
+
+        if nick == serv.get_nickname():
+            time.sleep(1)
+            serv.join(channel)
 
     def _get_plugins(self, force_reload=False):
         plugins = []
