@@ -128,25 +128,49 @@ class VoxVote(VoxState):
                 self.nick, duration)
             )
 
+    @property
+    def total_yes(self):
+        """Total number of Yes"""
+        return len([x for x in self.votes.values() if x is True])
+
+    @property
+    def total_vote(self):
+        """Total number of vote"""
+        return len(self.votes)
+
+    @property
+    def total_no(self):
+        """Total number of No"""
+        return self.total_vote - self.total_yes
+
     def on_timeout(self):
-        total = len(self.votes)
-        yes = len([x for x in self.votes.values() if x is True])
 
         self.plugin.privmsg(
             self.chan, "Result of the Vote to kick {}. Yes: {}, No: {}.".format(
-                self.nick, yes, total - yes)
+                self.nick, self.total_yes, self.total_no)
             )
 
-        if yes > int(total/2):
+        if self.total_yes > self.total_vote/2:
             self.plugin.kick(self.chan, self.nick, "Mouhahaha")
 
         return self.fork(VoxWait)
 
     def on_msg(self, msg, author):
+        choice = (msg.lower().strip() in ("yes", "oui"))
+        if not choice and msg.lower().strip() not in ("no", "non"):
+            self.plugin.privmsg(self.chan, "Usage: !voxpopuli [Yes/No]")
+            return
 
-        if author in self.votes:
-            return self
+        self.votes[author] = choice
 
-        self.votes[author] = bool(msg == "yes")
+        self.send_status()
 
         return self
+
+    def send_status(self):
+        """Send the current status of the vote"""
+        self.plugin.privmsg(
+            self.chan, "Vote to kick {}. Yes: {}, No: {}".format(
+                self.nick, self.total_yes, self.total_no
+            )
+        )
