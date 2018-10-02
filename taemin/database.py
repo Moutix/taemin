@@ -4,6 +4,27 @@ import peewee
 
 from taemin import conf
 
+class RetryOperationalError(object):
+
+    def execute_sql(self, sql, params=None, commit=True):
+        try:
+            cursor = super(RetryOperationalError, self).execute_sql(
+                sql, params, commit)
+        except peewee.OperationalError:
+            if not self.is_closed():
+                self.close()
+            with peewee.__exception_wrapper__:
+                cursor = self.cursor()
+                cursor.execute(sql, params or ())
+                if commit and not self.in_transaction():
+                    self.commit()
+        return cursor
+
+
+class MySQLRetryDatabase(RetryOperationalError, peewee.MySQLDatabase):
+    pass
+
+
 class DataBase(object):
     def __init__(self, type_, name, user="", password="", host="localhost", port=3306):
         self.type_ = type_
@@ -47,7 +68,7 @@ class DataBase(object):
         return peewee.PostgresqlDatabase(self.name, user=self.user, password=self.password, host=self.host)
 
     def _mysql_db(self):
-        return peewee.MySQLDatabase(self.name, user=self.user, passwd=self.password, host=self.host, port=self.port)
+        return MySQLRetryDatabase(self.name, user=self.user, passwd=self.password, host=self.host, port=self.port)
 
     def _default_db(self):
         return peewee.SqliteDatabase(":memory")
