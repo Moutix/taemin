@@ -6,6 +6,7 @@ import ssl
 import time
 import threading
 
+import ib3.auth
 import irc.bot
 import irc.client
 import irc.connection
@@ -27,7 +28,8 @@ LINK_REGEX = re.compile(
     re.IGNORECASE
 )
 
-class Taemin(irc.bot.SingleServerIRCBot):
+
+class Taemin(ib3.auth.SASL, irc.bot.SingleServerIRCBot):
     def __init__(self, *args):
         self.sd_notify = sdnotify.get_notifier()
         self.conf = conf.get_config("taemin")
@@ -51,7 +53,7 @@ class Taemin(irc.bot.SingleServerIRCBot):
         else:
             ssl_factory = irc.connection.Factory()
 
-        irc.bot.SingleServerIRCBot.__init__(self, [(self.server, self.port)], self.name, self.desc, connect_factory=ssl_factory)
+        super().__init__([(self.server, self.port)], self.name, self.desc, connect_factory=ssl_factory, ident_password=general_conf.get("nickserv", {}).get("pass"))
 
         self.sd_notify.status("Load plugins...")
 

@@ -57,6 +57,7 @@ setup(
     ],
 
     install_requires=[
+        'ib3',
         'irc',
         'peewee>=3.0',
         'bs4',
