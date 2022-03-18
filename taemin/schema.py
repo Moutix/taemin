@@ -35,7 +35,10 @@ class Link(database.db.basemodel):
         if not url:
             return None
 
-        true_url, title, content_type = cls.info_from_url(url)
+        try:
+            true_url, title, content_type = cls.info_from_url(url)
+        except:
+            return None
 
         if not true_url:
             return None

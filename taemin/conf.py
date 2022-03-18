@@ -43,7 +43,7 @@ class TaeminConf(dict):
         configuration_file = self._find_configuration_file(self._args.config)
 
         with open(configuration_file, 'r', encoding='utf-8') as stream:
-            self.update(yaml.load(stream), allow_unicode=True)
+            self.update(yaml.safe_load(stream), allow_unicode=True)
 
         for key, value in vars(self._args).items():
             self.add_to_conf(self, key, value, getattr(default_arg, key, None) != value)

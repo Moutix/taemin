@@ -22,12 +22,7 @@ class Logger(logging.Logger):
 
         self.setLevel(self._LEVEL.get(self._conf.get("log_level"), logging.INFO))
         self.addHandler(self._get_handler())
-        sys.excepthook = self._handler_exception
-
-    def _handler_exception(self, _type, value, tb):
-        for trace in traceback.format_tb(tb):
-            self.error(trace)
-        self.error("Uncaught exception: {0}".format(str(value)))
+        self.addHandler(logging.StreamHandler(sys.stdout))
 
     def _get_handler(self):
         filename = self._conf.get("log_file", "/var/log/taemin.log")
